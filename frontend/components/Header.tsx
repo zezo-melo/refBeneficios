@@ -4,6 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { StatusBar } from 'expo-status-bar';
+import { formatName } from "../utils/formatName";
+
 
 interface HeaderProps {
   onMenuPress?: () => void;
@@ -13,6 +16,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
   const navigation = useNavigation<DrawerNavigationProp<any>>();
   const [isPressed, setIsPressed] = useState(false);
   const { user, signOut } = useAuth();
+  
 
   const handleMenuPress = () => {
     console.log('Botão do menu pressionado');
@@ -58,7 +62,13 @@ export default function Header({ onMenuPress }: HeaderProps) {
   };
 
   return (
+    
     <View style={styles.header}>
+      <StatusBar 
+        style="light" // deixa os ícones/brancos
+        translucent={true} 
+        backgroundColor="transparent" 
+      />
 
       <TouchableOpacity 
         style={[
@@ -74,14 +84,14 @@ export default function Header({ onMenuPress }: HeaderProps) {
         <Ionicons 
           name="menu" 
           size={24} 
-          color={isPressed ? "#0d47a1" : "#1976D2"} 
+          color={isPressed ? "#0d47a1" : "#fff"} 
         />
       </TouchableOpacity>
       
       <View style={styles.logoContainer}>
         {/* Caminho correto: ../assets/images/ */}
         <Image
-          source={require('../assets/images/brb-logo.png')}
+          source={require('../assets/images/ITAU_LOGO.webp')}
           style={styles.logoImage}
           resizeMode="contain"
           onError={(error) => console.log('Erro ao carregar imagem:', error)}
@@ -93,7 +103,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
       <View style={styles.rightSection}>
         {user && (
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userName}>{formatName(user?.name)}</Text>
             <Text style={styles.userLevel}>Nível {user.level}</Text>
           </View>
         )}
@@ -102,7 +112,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
           onPress={handleLogout}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="log-out" size={20} color="#1976D2" />
+          <Ionicons name="log-out" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -114,7 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#ff6200',
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderBottomWidth: 1,
@@ -139,12 +149,12 @@ const styles = StyleSheet.create({
   logoContainer: {
     flex: 1,
     alignItems: 'center',
+    marginLeft: 52,
   },
   logoImage: {
     width: 180,
-    height: 40,
+    height: 50,
     resizeMode: 'contain',
-    backgroundColor: '#fff', // Cor de fundo para debug
   },
   fallbackText: {
     fontSize: 16,
@@ -166,11 +176,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   userLevel: {
     fontSize: 12,
-    color: '#666',
+    color: '#fff',
   },
   logoutButton: {
     padding: 8,

@@ -56,13 +56,19 @@ exports.login = async (req, res) => {
 };
 
 
-exports.getMe = async (req, res) => {
+// Função para buscar os dados do perfil do usuário
+exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-password"); // remove password
-    if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: "Erro ao buscar usuário" });
+      // O ID do usuário vem do middleware de autenticação (req.userId)
+      const user = await User.findById(req.userId).select('-password'); // '-password' para não retornar a senha
+
+      if (!user) {
+          return res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+
+      res.json(user); // Retorna os dados do usuário em JSON
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: 'Erro do servidor.' });
   }
 };
-

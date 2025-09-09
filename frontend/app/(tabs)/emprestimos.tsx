@@ -8,18 +8,18 @@ const LOAN_OPTIONS = [
   {
     title: 'Crédito Pessoal',
     description: 'Crédito simples, rápido e sem burocracia...',
-    image: require('../../assets/images/credito-pessoal.png'),
+    image: require('../../assets/images/credito-pessoal.avif'),
     buttonText: 'Saiba Mais',
     action: 'personal_loan',
-    url: 'https://novo.brb.com.br/para-voce/emprestimos-e-financiamentos/',
+    url: 'https://www.itau.com.br/emprestimos-financiamentos/emprestimo-pessoal',
   },
   {
     title: 'Crédito Consignado',
-    description: 'Com o BRB você tem as condições certas...',
-    image: require('../../assets/images/credito-consignado.png'),
+    description: 'Com o Itaú você tem as condições certas...',
+    image: require('../../assets/images/credito-consignado.avif'),
     buttonText: 'Saiba Mais',
     action: 'payroll_loan',
-    url: 'https://novo.brb.com.br/para-voce/emprestimos-e-financiamentos/',
+    url: 'https://www.itau.com.br/emprestimos-financiamentos/credito-do-trabalhador',
   },
 ];
 
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#ff6200',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

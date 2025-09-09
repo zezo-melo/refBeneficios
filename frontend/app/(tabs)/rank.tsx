@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   podiumPoints: {
     fontSize: 14,
-    color: '#0e76e0',
+    color: '#ff6200',
     fontWeight: '600',
     marginBottom: 2,
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   rankingListTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#292a2b',
+    color: '#ff6200',
     marginBottom: 20,
   },
   rankingItem: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   positionText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0e76e0',
+    color: '#ff6200',
   },
   userInfo: {
     flex: 1,
@@ -232,14 +232,14 @@ const styles = StyleSheet.create({
   pointsText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0e76e0',
+    color: '#ff6200',
   },
   moreButtonContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   moreButton: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

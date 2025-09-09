@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../components/Header';
+import { useAuth } from '../../contexts/AuthContext';
+import { formatName } from "../../utils/formatName";
+
 
 // Dados das missões com mais opções
 const MISSIONS = [
@@ -18,6 +21,8 @@ const MISSIONS = [
 
 export default function HomeScreen() {
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  const { user } = useAuth();
+
 
   const handleMissionPress = (missionId: string) => {
     setSelectedMissionId(selectedMissionId === missionId ? null : missionId);
@@ -34,7 +39,7 @@ export default function HomeScreen() {
       >
         {/* Área de saudação */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Olá!</Text>
+          <Text style={styles.greetingText}>Olá! {formatName(user?.name)} 👋</Text>
           <Text style={styles.subtitleText}>Pronto para mais uma missão?</Text>
         </View>
 
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: '#ececec',
+    paddingTop: 20,
     paddingBottom: 200,
 
   },
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 4,
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     borderRadius: 2,
   },
   missionNode: {
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -175,7 +181,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   btnMission: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     padding: 10,
     color: '#fff',
     borderRadius: 10,

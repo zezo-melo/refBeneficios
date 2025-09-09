@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 // Simulação de AsyncStorage para o ambiente do Canvas
@@ -77,49 +78,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadStoredUser = async () => {
     try {
-      const storedToken = await asyncStorage.getItem('@AppBeneficios:token');
+      const storedToken = await AsyncStorage.getItem('@AppBeneficios:token');
       if (storedToken) {
-        const mockUser: User = {
-          id: '1',
-          name: 'Usuário BRB',
-          email: 'mock@user.com', 
-          level: 4,
-          xp: 1395,
-        };
-        setUser(mockUser);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+  
+        // Busca os dados reais do usuário no backend
+        const response = await axios.get(`${API_URL}/profile`);
+        setUser(response.data);
       }
     } catch (error) {
-      console.log('Erro ao carregar usuário:', error);
+      console.log('Erro ao carregar usuário:', error.response?.data || error.message);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/login`, { email, password });
       const { token } = response.data;
-      
-      await asyncStorage.setItem('@AppBeneficios:token', token);
-      
-      const mockUser: User = {
-        id: '1',
-        name: 'Usuário BRB',
-        email: email,
-        level: 4,
-        xp: 1395,
-      };
-
-      setUser(mockUser);
-      
+  
+      await AsyncStorage.setItem('@AppBeneficios:token', token);
+  
+      // Define o token no axios para futuras requisições
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  
+      // Busca os dados reais do usuário logado
+      const profileResponse = await axios.get(`${API_URL}/profile`);
+      setUser(profileResponse.data);
+  
       Alert.alert('Sucesso', 'Login realizado com sucesso!');
-      
     } catch (error) {
       console.error('Erro no login:', error.response?.data || error.message);
       throw new Error('Falha na autenticação. Verifique seu email e senha.');
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const signOut = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.removeItem('@AppBeneficios:token');
+      delete axios.defaults.headers.common['Authorization'];
+    } catch (error) {
+      console.log('Erro no logout:', error);
     }
   };
 
@@ -133,15 +138,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Falha no cadastro. Verifique os dados ou tente novamente.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      setUser(null);
-      await asyncStorage.removeItem('@AppBeneficios:token');
-    } catch (error) {
-      console.log('Erro no logout:', error);
     }
   };
 

@@ -11,7 +11,7 @@ export default function BackButton() {
       onPress={() => navigation.navigate("shop")} 
       style={{ paddingBottom: 10 }}
     >
-      <Ionicons name="arrow-back" size={24} color="#1976D2" />
+      <Ionicons name="arrow-back" size={24} color="#ff6200" />
     </TouchableOpacity>
   );
 }

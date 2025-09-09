@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   filterChipActive: {
-    backgroundColor: '#0e76e0',
-    borderColor: '#0e76e0',
+    backgroundColor: '#ff6200',
+    borderColor: '#ff6200',
   },
   filterChipText: {
     color: '#666',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 12,
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   discountBadge: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   promocaoTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#292a2b',
+    color: '#ff6200',
     marginBottom: 4,
   },
   promocaoValidUntil: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   btnVerDetalhes: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   arrowText: {
     fontSize: 24,
-    color: '#0e76e0',
+    color: '#ff6200',
     fontWeight: 'bold',
   },
 }); 

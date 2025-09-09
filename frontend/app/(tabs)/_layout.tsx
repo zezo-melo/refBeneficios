@@ -6,10 +6,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#1976D2', // Cor do ícone ativo
-        tabBarInactiveTintColor: '#929292', // Cor do ícone inativo
+        tabBarActiveTintColor: '#fff', // Cor do ícone ativo
+        tabBarInactiveTintColor: '#fff', // Cor do ícone inativo
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#ff6200',
           height: 60,
           paddingBottom: 5,
         },
@@ -82,10 +82,17 @@ export default function TabLayout() {
         options={{
           title: 'Emprestimos',
           href: null, 
-        }}
-        
+        }}     
+      />
+      <Tabs.Screen
+        name="editProfile"
+        options={{
+          title: 'Editar Perfil',
+          href: null, 
+        }}        
 
       />
+
     </Tabs>    
   );
 }

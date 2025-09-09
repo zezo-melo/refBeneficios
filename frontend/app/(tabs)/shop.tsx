@@ -2,12 +2,22 @@ import Header from '@/components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
+import { formatName } from "../../utils/formatName";
+
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const { user } = useAuth();
 
+  const handlePress = () => {
+    Linking.openURL("https://www.itau.com.br/itau-shop");
+  };
+
+  
   return (
+    
     <SafeAreaView style={styles.safeArea}>
       <Header />
 
@@ -18,7 +28,7 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerText}>Olá, Usuário BRB!</Text>
+          <Text style={styles.headerText}>Olá, {formatName(user?.name)}!</Text>          
         </View>
 
         {/* Card de progresso */}
@@ -36,7 +46,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('descontos')}
           >
-            <Ionicons name="pricetag-outline" size={40} color="#1976D2" />
+            <Ionicons name="pricetag-outline" size={40} color="#ff6200" />
             <Text style={styles.gridText}>Descontos</Text>
           </TouchableOpacity>
 
@@ -44,7 +54,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('cursos')}
           >
-            <Ionicons name="school-outline" size={40} color="#1976D2" />
+            <Ionicons name="school-outline" size={40} color="#ff6200" />
             <Text style={styles.gridText}>Cursos</Text>
           </TouchableOpacity>
 
@@ -52,7 +62,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('pontos')}
           >
-            <Ionicons name="gift-outline" size={40} color="#1976D2" />
+            <Ionicons name="gift-outline" size={40} color="#ff6200" />
             <Text style={styles.gridText}>Pontos</Text>
           </TouchableOpacity>
 
@@ -60,8 +70,16 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('emprestimos')}
           >
-            <Ionicons name="card-outline" size={40} color="#1976D2" />
+            <Ionicons name="card-outline" size={40} color="#ff6200" />
             <Text style={styles.gridText}>Emprestimo</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <Text style={styles.promoTitle}>Veja mais produtos no nosso site</Text>
+
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={styles.btnMission}>Acessar</Text>
           </TouchableOpacity>
         </View>
 
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   progressCard: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#ff6200',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -126,7 +144,7 @@ const styles = StyleSheet.create({
   progressBarBackground: {
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#90caf9',
+    backgroundColor: '#ccc',
   },
   progressBarFill: {
     width: '60%', // progresso (exemplo)
@@ -148,13 +166,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#1976D2'
+    borderColor: '#ff6200'
   },
   gridIcon: {
     width: 40,
     height: 40,
     marginBottom: 10,
-    tintColor: '#1976D2',
+    tintColor: '#ff6200',
   },
   gridText: {
     fontSize: 16,
@@ -170,7 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   promoCard: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#ff6200',
     borderRadius: 12,
     padding: 20,
     flexDirection: 'row',
@@ -184,7 +202,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   discountText: {
-    color: '#1976D2',
+    color: '#ff6200',
     fontWeight: '700',
     fontSize: 14,
   },
@@ -201,4 +219,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#e3f2fd',
   },
+  btnMission: {
+    backgroundColor: '#ff6200',
+    padding: 10,
+    color: '#fff',
+    borderRadius: 10,
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: 700
+  },  
+
 });

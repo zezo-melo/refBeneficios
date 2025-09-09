@@ -54,7 +54,7 @@ export default function LoginScreen() {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Image
-                source={require('../assets/images/brb-logo.png')}
+                source={require('../assets/images/ITAU_LOGO.webp')}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -68,7 +68,7 @@ export default function LoginScreen() {
             {/* Campo Email */}
             <View style={styles.inputContainer}>
               <View style={styles.inputIcon}>
-                <Ionicons name="mail" size={20} color="#1976D2" />
+                <Ionicons name="mail" size={20} color="#ff6200" />
               </View>
               <TextInput
                 style={styles.input}
@@ -86,7 +86,7 @@ export default function LoginScreen() {
             {/* Campo Senha */}
             <View style={styles.inputContainer}>
               <View style={styles.inputIcon}>
-                <Ionicons name="lock-closed" size={20} color="#1976D2" />
+                <Ionicons name="lock-closed" size={20} color="#ff6200" />
               </View>
               <TextInput
                 style={styles.input}
@@ -128,11 +128,11 @@ export default function LoginScreen() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator color="#fff" size="small" />
+                <ActivityIndicator color="#ff6200" size="small" />
               ) : (
                 <>
                   <Text style={styles.loginButtonText}>Entrar</Text>
-                  <Ionicons name="arrow-forward" size={20} color="#fff" />
+                  <Ionicons name="arrow-forward" size={20} color="#ff6200" />
                 </>
               )}
             </TouchableOpacity>
@@ -172,7 +172,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ff6200',
   },
   keyboardView: {
     flex: 1,
@@ -192,17 +192,17 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 120,
-    height: 60,
+    height: 160,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1976D2',
+    color: '#fff',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#fff',
     textAlign: 'center',
   },
   form: {
@@ -238,12 +238,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   forgotPasswordText: {
-    color: '#1976D2',
+    color: '#fff',
     fontSize: 14,
     fontWeight: '500',
   },
   loginButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#fff',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#fff',
+    color: '#ff6200',
     fontSize: 18,
     fontWeight: '600',
     marginRight: 8,
@@ -278,34 +278,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9ecef',
   },
   dividerText: {
-    color: '#999',
+    color: '#fff',
     fontSize: 14,
     marginHorizontal: 16,
   },
   registerButton: {
     borderWidth: 2,
-    borderColor: '#1976D2',
+    borderColor: '#fff',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center',
   },
   registerButtonText: {
-    color: '#1976D2',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  footer: {
-    paddingBottom: 30,
-  },
   footerText: {
-    color: '#666',
+    color: '#fff',
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
+    marginBottom: 30
   },
   linkText: {
-    color: '#1976D2',
+    color: '#fff',
     fontWeight: '500',
+    textDecorationLine: 'underline',
   },
 });

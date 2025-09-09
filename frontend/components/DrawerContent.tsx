@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router'; // Importa o useRouter para navegação
 import React from 'react';
 import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { formatName } from "../utils/formatName";
+
 
 interface DrawerContentProps {
   navigation: any;
@@ -57,14 +59,14 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
         <View style={styles.logoContainer}>
           <Image
             style={styles.logoImage}
-            source={require('../assets/images/brb-logo.png')}
+            source={require('../assets/images/ITAU_LOGO.webp')}
             resizeMode="contain"
           />
         </View>
         <Text style={styles.subtitle}>App Benefícios</Text>
         {user && (
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userName}>{formatName(user?.name)}</Text>
             <Text style={styles.userLevel}>Nível {user.level} • {user.xp} XP</Text>
           </View>
         )}
@@ -78,9 +80,9 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
             style={styles.menuItem}
             onPress={() => handleNavigation(item.screen)}
           >
-            <Ionicons name={item.icon as any} size={24} color="#1976D2" />
+            <Ionicons name={item.icon as any} size={24} color="#fff" />
             <Text style={styles.menuText}>{item.title}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#ccc" />
+            <Ionicons name="chevron-forward" size={20} color="#fff" />
           </TouchableOpacity>
         ))}
       </View>
@@ -88,7 +90,7 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out" size={24} color="#f44336" />
+          <Ionicons name="log-out" size={24} color="#fff" />
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
       </View>
@@ -99,21 +101,21 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ff6200',
   },
   drawerHeader: {
-    padding: 20,
-    paddingBottom: 20,
+    paddingTop: 30,
+    paddingLeft: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    backgroundColor: '#f8f9fa',
+    borderBottomColor: '#ff6200',
+    backgroundColor: '#ff6200',
     alignItems: 'flex-start',
   },
   logoContainer: {
     paddingTop: 30,
     alignItems: 'center',
     marginBottom: 15,
-    marginLeft: -10,
+    marginLeft: -22,
   },
   logoImage: {
     width: 120,
@@ -122,7 +124,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    fontWeight: 800,
+    color: '#fff',
     textAlign: 'center',
   },
   userInfo: {
@@ -132,11 +135,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   userLevel: {
     fontSize: 14,
-    color: '#666',
+    color: '#fff',
   },
   menuContainer: {
     flex: 1,
@@ -148,18 +151,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: '#ff6200',
   },
   menuText: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
     marginLeft: 16,
   },
   footer: {
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: '#ff6200',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -167,11 +170,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 8,
     paddingBottom: 10,
-    backgroundColor: '#fff5f5',
+    backgroundColor: '#ff6200',
     marginLeft: 0,
   },
   logoutText: {
-    color: '#f44336',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,

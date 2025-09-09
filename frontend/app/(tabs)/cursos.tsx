@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   pointsCard: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     borderRadius: 16,
     padding: 20,
     flexDirection: 'row',
@@ -292,8 +292,8 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   filterChipActive: {
-    backgroundColor: '#0e76e0',
-    borderColor: '#0e76e0',
+    backgroundColor: '#ff6200',
+    borderColor: '#ff6200',
   },
   filterChipText: {
     color: '#666',
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 12,
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -387,10 +387,10 @@ const styles = StyleSheet.create({
   discountedPrice: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#292a2b',
+    color: '#ff6200',
   },
   discountBadge: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#ff6200',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -419,10 +419,10 @@ const styles = StyleSheet.create({
   pointsRequiredValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0e76e0',
+    color: '#ff6200',
   },
   btnInscrever: {
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

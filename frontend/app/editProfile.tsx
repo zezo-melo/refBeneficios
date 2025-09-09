@@ -1,15 +1,13 @@
-// RegisterScreen.js
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
-  Modal, // Importa o Modal para o seletor de data
   Platform,
   SafeAreaView,
-  ScrollView, // Importa o ScrollView
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -17,30 +15,42 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-// Importa o DateTimePicker (é necessário instalar: expo install @react-native-community/datetimepicker)
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Header from '@/components/Header';
 
-// Novo componente da tela de registro
-export default function RegisterScreen() {
+export default function UpdateProfileScreen() {
+  const { user, updateProfile, isLoading } = useAuth();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [dob, setDob] = useState(new Date()); // Estado para a data de nascimento (tipo Date)
-  const [dobDisplay, setDobDisplay] = useState(''); // Estado para exibir a data formatada
+  const [dob, setDob] = useState(new Date());
+  const [dobDisplay, setDobDisplay] = useState('');
   const [docType, setDocType] = useState('cpf');
   const [document, setDocument] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para controlar a visibilidade do seletor de data
-  // Atualizado para pegar a função 'signUp' em vez de 'register'
-  const { signUp, isLoading } = useAuth();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
 
-  // Função para aplicar a máscara no CPF ou CNPJ
+  
+  // Função para carregar os dados do usuário ao abrir a tela
+  useEffect(() => {
+    if (user && user.profile) {
+      setName(user.profile.name || '');
+      // Se a data de nascimento existe, formata para exibição
+      if (user.profile.dob) {
+        const date = new Date(user.profile.dob);
+        setDob(date);
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        setDobDisplay(formattedDate);
+      }
+      setDocType(user.profile.docType || 'cpf');
+      setDocument(user.profile.document || '');
+      setPhone(user.profile.phone || '');
+    }
+  }, [user]);
+
   const formatDocument = (text) => {
-    let formattedText = text.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+    let formattedText = text.replace(/\D/g, '');
     if (docType === 'cpf') {
       if (formattedText.length > 9) {
         formattedText = formattedText.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -49,8 +59,8 @@ export default function RegisterScreen() {
       } else if (formattedText.length > 3) {
         formattedText = formattedText.replace(/(\d{3})(\d{3})/, '$1.$2');
       }
-      formattedText = formattedText.substring(0, 14); // Limita o tamanho máximo
-    } else { // docType === 'cnpj'
+      formattedText = formattedText.substring(0, 14);
+    } else {
       if (formattedText.length > 12) {
         formattedText = formattedText.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
       } else if (formattedText.length > 8) {
@@ -60,55 +70,49 @@ export default function RegisterScreen() {
       } else if (formattedText.length > 2) {
         formattedText = formattedText.replace(/(\d{2})(\d{3})/, '$1.$2');
       }
-      formattedText = formattedText.substring(0, 18); // Limita o tamanho máximo
+      formattedText = formattedText.substring(0, 18);
     }
     setDocument(formattedText);
   };
 
-  // Função para lidar com a mudança de data no seletor
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios'); // Fecha o seletor no Android, mas no iOS pode precisar de um botão de 'ok'
+    setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setDob(selectedDate);
-      // Formata a data para exibição
       const formattedDate = `${selectedDate.getDate().toString().padStart(2, '0')}/${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}/${selectedDate.getFullYear()}`;
       setDobDisplay(formattedDate);
     }
   };
 
-  const handleRegister = async () => {
-    if (!name || !email || !dob || !document || !phone || !password || !confirmPassword) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+  const handleUpdate = async () => {
+    if (!name || !dob || !document || !phone) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos obrigatórios');
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem. Por favor, verifique e tente novamente.');
-      return;
-    }
-
-    // Cria um objeto com todos os dados do formulário
-    const registrationData = {
+    const updatedData = {
       name,
-      email,
-      dob,
+      dob: dob.toISOString(), // Salva a data no formato ISO
       docType,
       document,
       phone,
-      password,
     };
 
     try {
-      // Chama a função 'signUp' do contexto com o objeto de dados
-      await signUp(registrationData);
-      // O contexto já cuida da navegação em um cenário real
+      await updateProfile(updatedData);
+      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+      router.back(); // Volta para a tela anterior
     } catch (error) {
-      Alert.alert('Erro', error.message);
+      Alert.alert('Erro', error.message || 'Falha ao atualizar o perfil. Tente novamente.');
     }
   };
 
+
+
   return (
     <SafeAreaView style={styles.container}>
+      <Header />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -117,15 +121,8 @@ export default function RegisterScreen() {
           <View style={styles.content}>
             {/* Logo e Título */}
             <View style={styles.header}>
-              <View style={styles.logoContainer}>
-                <Image
-                  source={require('../assets/images/ITAU_LOGO.webp')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-              </View>
-              <Text style={styles.title}>Crie sua conta</Text>
-              <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
+              <Text style={styles.title}>Atualizar Perfil</Text>
+              <Text style={styles.subtitle}>Altere suas informações da conta</Text>
             </View>
 
             {/* Formulário */}
@@ -146,21 +143,17 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              {/* Campo Email */}
+              {/* Campo Email - não editável */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="mail" size={20} color="#ff6200" />
                 </View>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, styles.inputDisabled]}
                   placeholder="Email"
                   placeholderTextColor="#999"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!isLoading}
+                  value={user?.email || ''} // Exibe o email do usuário logado
+                  editable={false}
                 />
               </View>
 
@@ -175,7 +168,7 @@ export default function RegisterScreen() {
                     placeholder="Data de Nascimento (DD/MM/AAAA)"
                     placeholderTextColor="#999"
                     value={dobDisplay}
-                    editable={false} // Impede que o usuário digite no campo
+                    editable={false}
                   />
                 </View>
               </TouchableOpacity>
@@ -194,13 +187,14 @@ export default function RegisterScreen() {
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cpf');
-                    setDocument(''); // Limpa o campo ao mudar o tipo
+                    setDocument('');
                   }}
+                  disabled={isLoading}
                 >
                   <Ionicons
                     name={docType === 'cpf' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#fff"
+                    color="#ff6200"
                   />
                   <Text style={styles.radioText}>CPF</Text>
                 </TouchableOpacity>
@@ -208,13 +202,14 @@ export default function RegisterScreen() {
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cnpj');
-                    setDocument(''); // Limpa o campo ao mudar o tipo
+                    setDocument('');
                   }}
+                  disabled={isLoading}
                 >
                   <Ionicons
                     name={docType === 'cnpj' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#fff"
+                    color="#1976D2"
                   />
                   <Text style={styles.radioText}>CNPJ</Text>
                 </TouchableOpacity>
@@ -228,7 +223,7 @@ export default function RegisterScreen() {
                   placeholder={docType === 'cpf' ? 'Digite seu CPF' : 'Digite seu CNPJ'}
                   placeholderTextColor="#999"
                   value={document}
-                  onChangeText={formatDocument} // Usa a nova função de formatação
+                  onChangeText={formatDocument}
                   keyboardType="numeric"
                   editable={!isLoading}
                 />
@@ -250,66 +245,10 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              {/* Campo Senha */}
-              <View style={styles.inputContainer}>
-                <View style={styles.inputIcon}>
-                  <Ionicons name="lock-closed" size={20} color="#ff6200" />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Senha"
-                  placeholderTextColor="#999"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!isLoading}
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={20}
-                    color="#ff6200"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* Campo Confirmar Senha */}
-              <View style={styles.inputContainer}>
-                <View style={styles.inputIcon}>
-                  <Ionicons name="lock-closed" size={20} color="#ff6200" />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirmar Senha"
-                  placeholderTextColor="#999"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!isLoading}
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={20}
-                    color="#ff6200"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* Botão de Cadastro */}
+              {/* Botão de Atualizar */}
               <TouchableOpacity
-                style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
-                onPress={handleRegister}
+                style={[styles.updateButton, isLoading && styles.updateButtonDisabled]}
+                onPress={handleUpdate}
                 activeOpacity={0.8}
                 disabled={isLoading}
               >
@@ -317,18 +256,10 @@ export default function RegisterScreen() {
                   <ActivityIndicator color="#fff" size="small" />
                 ) : (
                   <>
-                    <Text style={styles.registerButtonText}>Cadastrar</Text>
-                    <Ionicons name="arrow-forward" size={20} color="#ff6200" />
+                    <Text style={styles.updateButtonText}>Salvar</Text>
+                    <Ionicons name="checkmark-circle" size={20} color="#fff" />
                   </>
                 )}
-              </TouchableOpacity>
-            </View>
-
-            {/* Link para Login */}
-            <View style={styles.loginLinkContainer}>
-              <Text style={styles.loginLinkText}>Já tem uma conta?</Text>
-              <TouchableOpacity onPress={() => router.navigate('login')} disabled={isLoading}>
-                <Text style={styles.loginLink}>Faça login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -341,7 +272,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
   },
   keyboardView: {
     flex: 1,
@@ -349,7 +280,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: '#ff6200',
+    backgroundColor: '#f8f9fa',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingTop: 40,
@@ -361,7 +292,6 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 60,
     paddingBottom: 40,
   },
   logoContainer: {
@@ -374,12 +304,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#ff6200',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#fff',
+    color: '#666',
     textAlign: 'center',
   },
   form: {
@@ -405,33 +335,30 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    color: '#333',
     paddingVertical: 16,
   },
-  eyeIcon: {
-    padding: 8,
+  inputDisabled: {
+    backgroundColor: '#e9ecef',
+    color: '#999',
   },
   radioGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    color: '#fff',
-    
   },
   radioOption: {
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 20,
-    color: '#fff',
-    
   },
   radioText: {
     marginLeft: 8,
     fontSize: 16,
-    color: '#fff',
+    color: '#333',
   },
-  registerButton: {
-    backgroundColor: '#fff',
+  updateButton: {
+    backgroundColor: '#ff6200',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
@@ -445,40 +372,14 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  registerButtonDisabled: {
+  updateButtonDisabled: {
     backgroundColor: '#ccc',
     opacity: 0.7,
   },
-  registerButtonText: {
-    color: '#ff6200',
+  updateButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
     marginRight: 8,
-  },
-  loginLinkContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 40,
-
-  },
-  loginLinkText: {
-    color: '#fff',
-    marginRight: 5,
-  },
-  loginLink: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-
-  footerText: {
-    color: '#fff',
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  linkText: {
-    color: '#fff',
-    fontWeight: '500',
-
   },
 });

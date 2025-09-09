@@ -1,32 +1,94 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/Header';
+import { useAuth } from '../../contexts/AuthContext';
+import { Stack } from 'expo-router';
+import { router } from "expo-router";
+import { formatName } from "../../utils/formatName";
 
-// Dados do usuário
-const USER_DATA = {
-  name: 'João Silva',
-  email: 'joao.silva@email.com',
-  level: 'Prata',
-  points: 420,
-  memberSince: 'Janeiro 2024',
-  totalMissions: 45,
-  completedMissions: 38,
-  rank: '#172'
-};
 
-// Opções do menu
 const MENU_OPTIONS = [
-  { id: '1', title: 'Editar Perfil', icon: '👤', action: 'edit' },
-  { id: '2', title: 'Configurações', icon: '⚙️', action: 'settings' },
-  { id: '3', title: 'Notificações', icon: '🔔', action: 'notifications' },
-  { id: '4', title: 'Privacidade', icon: '🔒', action: 'privacy' },
-  { id: '5', title: 'Ajuda e Suporte', icon: '❓', action: 'help' },
-  { id: '6', title: 'Sobre o App', icon: 'ℹ️', action: 'about' },
+  { 
+    id: '1', 
+    title: 'Editar Perfil', 
+    icon: '👤', 
+    route: '/editProfile', 
+    onPress: () => router.push('/editProfile') 
+  },
+  { 
+    id: '2', 
+    title: 'Indicadores', 
+    icon: '📊', 
+    route: '/comissoes', 
+    onPress: () => router.push('/comissoes') 
+  },
+  { id: '3', title: 'Configurações', icon: '⚙️', action: 'settings' },
+  { id: '4', title: 'Notificações', icon: '🔔', action: 'notifications' },
+  { id: '5', title: 'Privacidade', icon: '🔒', action: 'privacy' },
+  { id: '6', title: 'Ajuda e Suporte', icon: '❓', action: 'help' },
+  { id: '7', title: 'Sobre o App', icon: 'ℹ️', action: 'about' },
 ];
 
+
 export default function ProfileScreen() {
+  const { signOut } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('userToken');
+      console.log("TOKEN RECUPERADO:", token);
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch('http://localhost:3000/api/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile');
+      }
+
+      const data = await response.json();
+      setProfile(data);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#0e76e0" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Stack.Screen options={{ headerShown: false }} />
       <Header />
       
       <ScrollView 
@@ -39,33 +101,32 @@ export default function ProfileScreen() {
           {/* Avatar */}
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{USER_DATA.name.charAt(0)}</Text>
+              <Text style={styles.avatarText}>{formatName(user?.name?.charAt(0)) || '?'}</Text>
             </View>
             <View style={styles.levelBadge}>
-              <Text style={styles.levelBadgeText}>{USER_DATA.level}</Text>
+              <Text style={styles.levelBadgeText}>{user?.level || 'N/A'}</Text>
             </View>
           </View>
           
           {/* Informações do usuário */}
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{USER_DATA.name}</Text>
-            <Text style={styles.userEmail}>{USER_DATA.email}</Text>
-            <Text style={styles.memberSince}>Membro desde {USER_DATA.memberSince}</Text>
+            <Text style={styles.userName}>{formatName(user?.name) || 'Carregando...'}</Text>
+            <Text style={styles.userEmail}>{user?.email || ''}</Text>
           </View>
         </View>
 
         {/* Estatísticas */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>{USER_DATA.points}</Text>
+            <Text style={styles.statValue}>{user?.points || 0}</Text>
             <Text style={styles.statLabel}>Pontos</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>{USER_DATA.completedMissions}</Text>
+            <Text style={styles.statValue}>{user?.completedMissions || 0}</Text>
             <Text style={styles.statLabel}>Missões</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>{USER_DATA.rank}</Text>
+            <Text style={styles.statValue}>{user?.rank || 'N/A'}</Text>
             <Text style={styles.statLabel}>Ranking</Text>
           </View>
         </View>
@@ -75,7 +136,11 @@ export default function ProfileScreen() {
           <Text style={styles.menuTitle}>Configurações</Text>
           
           {MENU_OPTIONS.map((option) => (
-            <TouchableOpacity key={option.id} style={styles.menuItem}>
+            <TouchableOpacity 
+              key={option.id} 
+              style={styles.menuItem} 
+              onPress={option.onPress}  // <- adiciona isso
+            >
               <View style={styles.menuItemLeft}>
                 <Text style={styles.menuIcon}>{option.icon}</Text>
                 <Text style={styles.menuText}>{option.title}</Text>
@@ -87,7 +152,7 @@ export default function ProfileScreen() {
 
         {/* Botão de logout */}
         <View style={styles.logoutContainer}>
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutButtonText}>Sair da Conta</Text>
           </TouchableOpacity>
         </View>
@@ -108,6 +173,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#f8f9fa',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
   headerSection: {
     paddingHorizontal: 20,
     paddingTop: 15,
@@ -122,7 +193,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#0e76e0',
+    backgroundColor: '#ff6200',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -184,7 +255,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0e76e0',
+    color: '#ff6200',
     marginBottom: 4,
   },
   statLabel: {
@@ -240,7 +311,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   logoutButton: {
-    backgroundColor: '#dc3545',
+    backgroundColor: '#ff6200',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
