@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#292a2b',
+    color: '#4a7f37',
     marginBottom: 8,
   },
   subtitleText: {
     fontSize: 16,
-    color: '#666',
+    color: '#4a7f37',
   },
   podiumContainer: {
     flexDirection: 'row',
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   podiumPoints: {
     fontSize: 14,
-    color: '#ff6200',
+    color: '#4a7f37',
     fontWeight: '600',
     marginBottom: 2,
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   rankingListTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 20,
   },
   rankingItem: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   positionText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
   },
   userInfo: {
     flex: 1,
@@ -232,14 +232,14 @@ const styles = StyleSheet.create({
   pointsText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
   },
   moreButtonContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   moreButton: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

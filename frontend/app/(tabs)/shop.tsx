@@ -46,7 +46,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('descontos')}
           >
-            <Ionicons name="pricetag-outline" size={40} color="#ff6200" />
+            <Ionicons name="pricetag-outline" size={40} color="#4a7f37" />
             <Text style={styles.gridText}>Descontos</Text>
           </TouchableOpacity>
 
@@ -54,7 +54,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('cursos')}
           >
-            <Ionicons name="school-outline" size={40} color="#ff6200" />
+            <Ionicons name="school-outline" size={40} color="#4a7f37" />
             <Text style={styles.gridText}>Cursos</Text>
           </TouchableOpacity>
 
@@ -62,7 +62,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('pontos')}
           >
-            <Ionicons name="gift-outline" size={40} color="#ff6200" />
+            <Ionicons name="gift-outline" size={40} color="#4a7f37" />
             <Text style={styles.gridText}>Pontos</Text>
           </TouchableOpacity>
 
@@ -70,7 +70,7 @@ export default function HomeScreen() {
             style={styles.gridItem} 
             onPress={() => navigation.navigate('emprestimos')}
           >
-            <Ionicons name="card-outline" size={40} color="#ff6200" />
+            <Ionicons name="card-outline" size={40} color="#4a7f37" />
             <Text style={styles.gridText}>Emprestimo</Text>
           </TouchableOpacity>
         </View>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   progressCard: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#ff6200'
+    borderColor: '#4a7f37'
   },
   gridIcon: {
     width: 40,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   promoCard: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     padding: 20,
     flexDirection: 'row',
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   discountText: {
-    color: '#ff6200',
+    color: '#4a7f37',
     fontWeight: '700',
     fontSize: 14,
   },
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     color: '#e3f2fd',
   },
   btnMission: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     padding: 10,
     color: '#fff',
     borderRadius: 10,

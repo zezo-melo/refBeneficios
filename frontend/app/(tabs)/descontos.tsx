@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#292a2b',
+    color: '#4a7f37',
     marginBottom: 8,
   },
   subtitleText: {
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   filterChipActive: {
-    backgroundColor: '#ff6200',
-    borderColor: '#ff6200',
+    backgroundColor: '#4a7f37',
+    borderColor: '#4a7f37',
   },
   filterChipText: {
     color: '#666',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 12,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   discountBadge: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   promocaoTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 4,
   },
   promocaoValidUntil: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   btnVerDetalhes: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,

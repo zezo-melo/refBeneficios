@@ -67,8 +67,8 @@ export default function ComissoesScreen() {
           backgroundGradientFrom: "#fff",
           backgroundGradientTo: "#fff",
           decimalPlaces: 0,
-          color: () => "#ff6600",
-          labelColor: () => "#475569",
+          color: () => "#4a7f37",
+          labelColor: () => "#4a7f37",
         }}
         style={styles.chart}
       />
@@ -77,9 +77,9 @@ export default function ComissoesScreen() {
       <Text style={styles.section}>Mix por Tipo</Text>
       <PieChart
         data={[
-          { name: "Crédito", population: 45, color: "#ff6600", legendFontColor: "#333" },
-          { name: "Débito", population: 30, color: "#ffa94d", legendFontColor: "#333" },
-          { name: "Outros", population: 25, color: "#fcd34d", legendFontColor: "#333" },
+          { name: "Crédito", population: 45, color: "#4a7f37", legendFontColor: "#333" },
+          { name: "Débito", population: 30, color: "#666", legendFontColor: "#333" },
+          { name: "Outros", population: 25, color: "#cecece", legendFontColor: "#333" },
         ]}
         width={chartWidth}
         height={220}
@@ -105,7 +105,7 @@ export default function ComissoesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", padding: 20, marginBottom: 50, },
   containerG: { flex: 1, backgroundColor: "#fff"},
-  title: { fontSize: 22, fontWeight: "bold", color: "#ff6600", marginBottom: 16 },
+  title: { fontSize: 22, fontWeight: "bold", color: "#4a7f37", marginBottom: 16 },
   row: { flexDirection: "row", justifyContent: "space-between" },
   card: {
     flex: 1,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   cardLabel: { fontSize: 14, color: "#64748b" },
   cardValue: { fontSize: 16, fontWeight: "bold", color: "#0f172a", marginTop: 6 },
-  section: { marginTop: 20, fontSize: 18, fontWeight: "bold", color: "#ff6600" },
+  section: { marginTop: 20, fontSize: 18, fontWeight: "bold", color: "#4a7f37" },
   operationCard: {
     backgroundColor: "#fff",
     elevation: 2,
@@ -135,10 +135,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: '#4a7f37',
   },
   btnMission: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     padding: 10,
     color: '#fff',
     borderRadius: 10,

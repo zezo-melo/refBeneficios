@@ -57,11 +57,11 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
       {/* Header do drawer */}
       <View style={styles.drawerHeader}>
         <View style={styles.logoContainer}>
-          <Image
-            style={styles.logoImage}
-            source={require('../assets/images/ITAU_LOGO.webp')}
-            resizeMode="contain"
-          />
+        <Image
+          source={require('../assets/images/osm-logo.png')}
+          style={styles.logoOsm}
+          resizeMode="contain"
+        />     
         </View>
         <Text style={styles.subtitle}>App Benefícios</Text>
         {user && (
@@ -80,9 +80,9 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
             style={styles.menuItem}
             onPress={() => handleNavigation(item.screen)}
           >
-            <Ionicons name={item.icon as any} size={24} color="#fff" />
+            <Ionicons name={item.icon as any} size={24} color="#4a7f37" />
             <Text style={styles.menuText}>{item.title}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#fff" />
+            <Ionicons name="chevron-forward" size={20} color="#4a7f37" />
           </TouchableOpacity>
         ))}
       </View>
@@ -90,7 +90,7 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out" size={24} color="#fff" />
+          <Ionicons name="log-out" size={24} color="#4a7f37" />
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
       </View>
@@ -101,14 +101,14 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
   },
   drawerHeader: {
     paddingTop: 30,
     paddingLeft: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#ff6200',
-    backgroundColor: '#ff6200',
+    borderBottomColor: '#fff',
+    backgroundColor: '#fff',
     alignItems: 'flex-start',
   },
   logoContainer: {
@@ -117,15 +117,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: -22,
   },
-  logoImage: {
-    width: 120,
+  logoOsm: {
+    width: 200,
     height: 80,
-    resizeMode: 'contain',
+    marginLeft: 20
   },
   subtitle: {
     fontSize: 16,
     fontWeight: 800,
-    color: '#fff',
+    color: '#4a7f37',
     textAlign: 'center',
   },
   userInfo: {
@@ -135,11 +135,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#4a7f37',
   },
   userLevel: {
     fontSize: 14,
-    color: '#fff',
+    color: '#4a7f37',
   },
   menuContainer: {
     flex: 1,
@@ -151,18 +151,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#ff6200',
+    borderBottomColor: '#fff',
   },
   menuText: {
     flex: 1,
     fontSize: 16,
-    color: '#fff',
+    color: '#4a7f37',
     marginLeft: 16,
   },
   footer: {
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#ff6200',
+    borderTopColor: '#fff',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 8,
     paddingBottom: 10,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
     marginLeft: 0,
   },
   logoutText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,

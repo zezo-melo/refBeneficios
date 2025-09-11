@@ -130,7 +130,7 @@ export default function UpdateProfileScreen() {
               {/* Campo Nome */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="person" size={20} color="#ff6200" />
+                  <Ionicons name="person" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={styles.input}
@@ -146,7 +146,7 @@ export default function UpdateProfileScreen() {
               {/* Campo Email - não editável */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="mail" size={20} color="#ff6200" />
+                  <Ionicons name="mail" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
@@ -161,7 +161,7 @@ export default function UpdateProfileScreen() {
               <TouchableOpacity onPress={() => setShowDatePicker(true)} disabled={isLoading}>
                 <View style={styles.inputContainer}>
                   <View style={styles.inputIcon}>
-                    <Ionicons name="calendar" size={20} color="#ff6200" />
+                    <Ionicons name="calendar" size={20} color="#4a7f37" />
                   </View>
                   <TextInput
                     style={styles.input}
@@ -194,7 +194,7 @@ export default function UpdateProfileScreen() {
                   <Ionicons
                     name={docType === 'cpf' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#ff6200"
+                    color="#4a7f37"
                   />
                   <Text style={styles.radioText}>CPF</Text>
                 </TouchableOpacity>
@@ -209,14 +209,14 @@ export default function UpdateProfileScreen() {
                   <Ionicons
                     name={docType === 'cnpj' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#1976D2"
+                    color="#4a7f37"
                   />
                   <Text style={styles.radioText}>CNPJ</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="document" size={20} color="#ff6200" />
+                  <Ionicons name="document" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={styles.input}
@@ -232,7 +232,7 @@ export default function UpdateProfileScreen() {
               {/* Campo Telefone */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="call" size={20} color="#ff6200" />
+                  <Ionicons name="call" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={styles.input}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 8,
   },
   subtitle: {
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   updateButton: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,

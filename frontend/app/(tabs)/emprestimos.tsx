@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardButton: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

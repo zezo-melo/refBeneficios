@@ -9,7 +9,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#fff', // Cor do ícone ativo
         tabBarInactiveTintColor: '#fff', // Cor do ícone inativo
         tabBarStyle: {
-          backgroundColor: '#ff6200',
+          backgroundColor: '#4a7f37',
           height: 60,
           paddingBottom: 5,
         },

@@ -1,6 +1,7 @@
 // RegisterScreen.js
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
+import LogoCarousel from '../components/LogoCarousel'
 import {
   ActivityIndicator,
   Alert,
@@ -117,13 +118,13 @@ export default function RegisterScreen() {
           <View style={styles.content}>
             {/* Logo e Título */}
             <View style={styles.header}>
-              <View style={styles.logoContainer}>
-                <Image
-                  source={require('../assets/images/ITAU_LOGO.webp')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-              </View>
+              <View style={styles.header}>
+                          <Image
+                            source={require('../assets/images/osm-logo.png')}
+                            style={styles.logoOsm}
+                            resizeMode="contain"
+                          />
+                        </View>
               <Text style={styles.title}>Crie sua conta</Text>
               <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
             </View>
@@ -133,12 +134,12 @@ export default function RegisterScreen() {
               {/* Campo Nome */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="person" size={20} color="#ff6200" />
+                  <Ionicons name="person" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Nome completo"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={name}
                   onChangeText={setName}
                   autoCapitalize="words"
@@ -149,12 +150,12 @@ export default function RegisterScreen() {
               {/* Campo Email */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="mail" size={20} color="#ff6200" />
+                  <Ionicons name="mail" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -168,12 +169,12 @@ export default function RegisterScreen() {
               <TouchableOpacity onPress={() => setShowDatePicker(true)} disabled={isLoading}>
                 <View style={styles.inputContainer}>
                   <View style={styles.inputIcon}>
-                    <Ionicons name="calendar" size={20} color="#ff6200" />
+                    <Ionicons name="calendar" size={20} color="#fff" />
                   </View>
                   <TextInput
                     style={styles.input}
                     placeholder="Data de Nascimento (DD/MM/AAAA)"
-                    placeholderTextColor="#999"
+                    placeholderTextColor="#fff"
                     value={dobDisplay}
                     editable={false} // Impede que o usuário digite no campo
                   />
@@ -200,7 +201,7 @@ export default function RegisterScreen() {
                   <Ionicons
                     name={docType === 'cpf' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#fff"
+                    color="#4a7f37"
                   />
                   <Text style={styles.radioText}>CPF</Text>
                 </TouchableOpacity>
@@ -214,19 +215,19 @@ export default function RegisterScreen() {
                   <Ionicons
                     name={docType === 'cnpj' ? 'radio-button-on' : 'radio-button-off'}
                     size={20}
-                    color="#fff"
+                    color="#4a7f37"
                   />
                   <Text style={styles.radioText}>CNPJ</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="document" size={20} color="#ff6200" />
+                  <Ionicons name="document" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder={docType === 'cpf' ? 'Digite seu CPF' : 'Digite seu CNPJ'}
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={document}
                   onChangeText={formatDocument} // Usa a nova função de formatação
                   keyboardType="numeric"
@@ -237,12 +238,12 @@ export default function RegisterScreen() {
               {/* Campo Telefone */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="call" size={20} color="#ff6200" />
+                  <Ionicons name="call" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Telefone"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={phone}
                   onChangeText={setPhone}
                   keyboardType="phone-pad"
@@ -253,12 +254,12 @@ export default function RegisterScreen() {
               {/* Campo Senha */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="lock-closed" size={20} color="#ff6200" />
+                  <Ionicons name="lock-closed" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Senha"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
@@ -273,7 +274,7 @@ export default function RegisterScreen() {
                   <Ionicons
                     name={showPassword ? "eye-off" : "eye"}
                     size={20}
-                    color="#ff6200"
+                    color="#fff"
                   />
                 </TouchableOpacity>
               </View>
@@ -281,12 +282,12 @@ export default function RegisterScreen() {
               {/* Campo Confirmar Senha */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
-                  <Ionicons name="lock-closed" size={20} color="#ff6200" />
+                  <Ionicons name="lock-closed" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
                   placeholder="Confirmar Senha"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#fff"
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showPassword}
@@ -301,7 +302,7 @@ export default function RegisterScreen() {
                   <Ionicons
                     name={showPassword ? "eye-off" : "eye"}
                     size={20}
-                    color="#ff6200"
+                    color="#fff"
                   />
                 </TouchableOpacity>
               </View>
@@ -318,7 +319,7 @@ export default function RegisterScreen() {
                 ) : (
                   <>
                     <Text style={styles.registerButtonText}>Cadastrar</Text>
-                    <Ionicons name="arrow-forward" size={20} color="#ff6200" />
+                    <Ionicons name="arrow-forward" size={20} color="#fff" />
                   </>
                 )}
               </TouchableOpacity>
@@ -341,7 +342,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
   },
   keyboardView: {
     flex: 1,
@@ -349,10 +350,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    paddingTop: 40,
+    paddingTop: 80,
   },
   content: {
     flex: 1,
@@ -361,11 +362,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 40,
   },
   logoContainer: {
-    marginBottom: 20,
   },
   logo: {
     width: 120,
@@ -374,30 +372,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#4a7f37',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#fff',
+    color: '#4a7f37',
     textAlign: 'center',
   },
   form: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: 20,
-    paddingBottom: 40,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: '#4a7f37',
   },
   inputIcon: {
     marginRight: 12,
@@ -405,7 +402,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    color: '#fff',
     paddingVertical: 16,
   },
   eyeIcon: {
@@ -428,10 +425,10 @@ const styles = StyleSheet.create({
   radioText: {
     marginLeft: 8,
     fontSize: 16,
-    color: '#fff',
+    color: '#4a7f37',
   },
   registerButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
@@ -450,7 +447,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   registerButtonText: {
-    color: '#ff6200',
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
     marginRight: 8,
@@ -458,27 +455,30 @@ const styles = StyleSheet.create({
   loginLinkContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 40,
 
   },
   loginLinkText: {
-    color: '#fff',
+    color: '#4a7f37',
     marginRight: 5,
   },
   loginLink: {
-    color: '#fff',
+    color: '#4a7f37',
     fontWeight: 'bold',
   },
 
   footerText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
   },
   linkText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontWeight: '500',
-
+  },
+  logoOsm: {
+    width: 250,
+    height: 80,
+    marginLeft: -40,
   },
 });

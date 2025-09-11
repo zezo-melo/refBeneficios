@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#292a2b',
+    color: '#4a7f37',
     marginBottom: 8,
   },
   subtitleText: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   pointsCard: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 16,
     padding: 20,
     flexDirection: 'row',
@@ -292,8 +292,8 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   filterChipActive: {
-    backgroundColor: '#ff6200',
-    borderColor: '#ff6200',
+    backgroundColor: '#4a7f37',
+    borderColor: '#4a7f37',
   },
   filterChipText: {
     color: '#666',
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 12,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   cursoTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#292a2b',
+    color: '#4a7f37',
     marginBottom: 4,
   },
   cursoInstructor: {
@@ -387,10 +387,10 @@ const styles = StyleSheet.create({
   discountedPrice: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
   },
   discountBadge: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -419,10 +419,10 @@ const styles = StyleSheet.create({
   pointsRequiredValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
   },
   btnInscrever: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

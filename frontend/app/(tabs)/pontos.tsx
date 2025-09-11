@@ -109,7 +109,7 @@ export default function PontosScreen() {
   };
 
   const getStatusColor = (status: string) => {
-    return status === 'completed' ? '#ff6200' : '#ffc107';
+    return status === 'completed' ? '#4a7f37' : '#4a7f37';
   };
 
   return (
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     paddingBottom: 25,
   },
   pointsCard: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   rankingValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 4,
   },
   rankingSubtext: {
@@ -335,8 +335,8 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   filterChipActive: {
-    backgroundColor: '#ff6200',
-    borderColor: '#ff6200',
+    backgroundColor: '#4a7f37',
+    borderColor: '#4a7f37',
   },
   filterChipText: {
     color: '#666',
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   chartTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: 20,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 10,
     marginBottom: 8,
   },
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   btnMoreDetails: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

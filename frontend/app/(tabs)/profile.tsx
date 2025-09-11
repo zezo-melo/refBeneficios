@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ff6200',
+    color: '#4a7f37',
     marginBottom: 4,
   },
   statLabel: {
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   logoutButton: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

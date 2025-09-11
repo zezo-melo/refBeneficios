@@ -6,7 +6,7 @@ import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 import { useAuth } from '../contexts/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { formatName } from "../utils/formatName";
-
+import LogoCarousel from '../components/LogoCarousel'
 
 interface HeaderProps {
   onMenuPress?: () => void;
@@ -65,7 +65,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
     
     <View style={styles.header}>
       <StatusBar 
-        style="light" // deixa os ícones/brancos
+        style="dark" // deixa os ícones/brancos
         translucent={true} 
         backgroundColor="transparent" 
       />
@@ -84,20 +84,17 @@ export default function Header({ onMenuPress }: HeaderProps) {
         <Ionicons 
           name="menu" 
           size={24} 
-          color={isPressed ? "#0d47a1" : "#fff"} 
+          color={isPressed ? "#4a7f37" : "#4a7f37"} 
         />
       </TouchableOpacity>
       
       <View style={styles.logoContainer}>
         {/* Caminho correto: ../assets/images/ */}
         <Image
-          source={require('../assets/images/ITAU_LOGO.webp')}
-          style={styles.logoImage}
+          source={require('../assets/images/osm-logo.png')}
+          style={styles.logoOsm}
           resizeMode="contain"
-          onError={(error) => console.log('Erro ao carregar imagem:', error)}
-          onLoad={() => console.log('Imagem carregada com sucesso!')}
-        />
-        
+        />        
       </View>
       
       <View style={styles.rightSection}>
@@ -112,7 +109,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
           onPress={handleLogout}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="log-out" size={20} color="#fff" />
+          <Ionicons name="log-out" size={20} color="#4a7f37" />
         </TouchableOpacity>
       </View>
     </View>
@@ -124,7 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderBottomWidth: 1,
@@ -151,10 +148,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 52,
   },
-  logoImage: {
-    width: 180,
-    height: 50,
-    resizeMode: 'contain',
+  
+  logoOsm: {
+    width: 150,
+    height: 80,
+    marginLeft: -40,
   },
   fallbackText: {
     fontSize: 16,
@@ -176,11 +174,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#4a7f37',
   },
   userLevel: {
     fontSize: 12,
-    color: '#fff',
+    color: '#4a7f37',
   },
   logoutButton: {
     padding: 8,

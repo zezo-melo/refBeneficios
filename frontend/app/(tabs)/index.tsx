@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 4,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     borderRadius: 2,
   },
   missionNode: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   btnMission: {
-    backgroundColor: '#ff6200',
+    backgroundColor: '#4a7f37',
     padding: 10,
     color: '#fff',
     borderRadius: 10,

@@ -1,5 +1,6 @@
 // LoginScreen.js
 import { Ionicons } from '@expo/vector-icons';
+import Swiper from 'react-native-swiper';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -52,12 +53,42 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Logo e Título */}
           <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={require('../assets/images/ITAU_LOGO.webp')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
+            <Image
+                    source={require('../assets/images/osm-logo.png')}
+                    style={styles.logoOsm}
+                    resizeMode="contain"
+                  />
+            <View style={styles.logoContainer}>              
+             <View style={styles.logoCarousel}>
+                <Swiper
+                  autoplay
+                  autoplayTimeout={2.5} // tempo em segundos para trocar
+                  showsPagination={false} // remove os pontinhos de paginação
+                  loop
+                  height={80}
+                >
+                  <Image
+                    source={require('../assets/images/itau-logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Image
+                    source={require('../assets/images/brb-logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Image
+                    source={require('../assets/images/btg-logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Image
+                    source={require('../assets/images/fgv-logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                </Swiper>
+              </View>
             </View>
             <Text style={styles.title}>App Benefícios</Text>
             <Text style={styles.subtitle}>Faça login para continuar</Text>
@@ -68,12 +99,12 @@ export default function LoginScreen() {
             {/* Campo Email */}
             <View style={styles.inputContainer}>
               <View style={styles.inputIcon}>
-                <Ionicons name="mail" size={20} color="#ff6200" />
+                <Ionicons name="mail" size={20} color="#fff" />
               </View>
               <TextInput
                 style={styles.input}
                 placeholder="Digite seu email"
-                placeholderTextColor="#999"
+                placeholderTextColor="#fff"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -86,12 +117,12 @@ export default function LoginScreen() {
             {/* Campo Senha */}
             <View style={styles.inputContainer}>
               <View style={styles.inputIcon}>
-                <Ionicons name="lock-closed" size={20} color="#ff6200" />
+                <Ionicons name="lock-closed" size={20} color="#fff" />
               </View>
               <TextInput
                 style={styles.input}
                 placeholder="Digite sua senha"
-                placeholderTextColor="#999"
+                placeholderTextColor="#fff"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -106,7 +137,7 @@ export default function LoginScreen() {
                 <Ionicons 
                   name={showPassword ? "eye-off" : "eye"} 
                   size={20} 
-                  color="#999" 
+                  color="#fff" 
                 />
               </TouchableOpacity>
             </View>
@@ -128,11 +159,11 @@ export default function LoginScreen() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator color="#ff6200" size="small" />
+                <ActivityIndicator color="#fff" size="small" />
               ) : (
                 <>
                   <Text style={styles.loginButtonText}>Entrar</Text>
-                  <Ionicons name="arrow-forward" size={20} color="#ff6200" />
+                  <Ionicons name="arrow-forward" size={20} color="#fff" />
                 </>
               )}
             </TouchableOpacity>
@@ -163,7 +194,7 @@ export default function LoginScreen() {
               <Text style={styles.linkText}>Política de Privacidade</Text>
             </Text>
           </View>
-        </View>
+        </View>        
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -172,7 +203,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ff6200',
+    backgroundColor: '#fff',
   },
   keyboardView: {
     flex: 1,
@@ -184,50 +215,66 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 80,
+
   },
   logoContainer: {
-    marginBottom: 20,
+    flexDirection: 'row',
   },
-  logo: {
-    width: 120,
-    height: 160,
+logoCarousel: {
+  height: 80,
+  width: '100%',
+  marginVertical: 20,
+},
+
+logo: {
+  width: 120,
+  height: 80,
+  alignSelf: 'center',
+},
+  logoOsm: {
+    width: 250,
+    height: 80,
+    marginLeft: -40,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
+    color: '#4a7f37',
   },
   subtitle: {
     fontSize: 16,
-    color: '#fff',
+    color: '#4a7f37',
     textAlign: 'center',
+    marginBottom: 100,
   },
   form: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: 20,
+    color: '#fff',
+    marginTop: 40,
+
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: '#4a7f37',
   },
   inputIcon: {
     marginRight: 12,
+    color: '#4a7f37'
   },
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
     paddingVertical: 16,
   },
   eyeIcon: {
@@ -238,12 +285,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   forgotPasswordText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 14,
     fontWeight: '500',
   },
   loginButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#4a7f37',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
@@ -262,7 +309,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#ff6200',
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
     marginRight: 8,
@@ -270,40 +317,48 @@ const styles = StyleSheet.create({
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e9ecef',
+    backgroundColor: '#4a7f37',
+    marginBottom: 10
   },
   dividerText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 14,
     marginHorizontal: 16,
+    marginBottom: 10
+
   },
   registerButton: {
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#4a7f37',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center',
+
   },
   registerButtonText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 16,
     fontWeight: '600',
   },
+  footer: {
+    marginTop: 20 
+  },
   footerText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
-    marginBottom: 30
+    marginTop: 100,
+    marginBottom:60,
+
   },
   linkText: {
-    color: '#fff',
+    color: '#4a7f37',
     fontWeight: '500',
     textDecorationLine: 'underline',
   },
