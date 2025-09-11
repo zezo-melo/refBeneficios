@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#4a7f37',
+    marginLeft: -10,
   },
   userLevel: {
     fontSize: 14,
