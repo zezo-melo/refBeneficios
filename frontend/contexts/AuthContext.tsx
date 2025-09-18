@@ -19,15 +19,15 @@ const Alert = {
 
 // Objeto de configuração para URLs da API
 const API_CONFIG = {
-  // Para testar no emulador Android
-  emulator: 'http://10.0.2.2:3000/api/auth', 
+  // A URL base da sua API sem o caminho de rota
+  emulator: 'http://10.0.2.2:3000/api', 
   // Para testar em um celular na mesma rede local que o seu PC
-  localNetwork: 'http://192.168.1.15:3000/api/auth',
+  localNetwork: 'http://192.168.1.15:3000/api',
   // Para o seu backend hospedado no Vercel
-  vercel: 'https://seu-backend-incrivel.vercel.app/api/auth',
+  vercel: 'https://seu-backend-incrivel.vercel.app/api',
 };
 
-// Altere esta variável para mudar a URL da API para o ambiente de teste
+// A URL base que aponta para o seu backend
 const API_URL = API_CONFIG.emulator; 
 
 interface User {
@@ -36,6 +36,15 @@ interface User {
   email: string;
   level: number;
   xp: number;
+  points: number;
+  missions: number;
+  profile?: { 
+    name: string;
+    dob: string;
+    docType: string;
+    document: string;
+    phone: string;
+  };
 }
 
 interface UserRegistrationData {
@@ -55,7 +64,7 @@ interface AuthContextData {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (data: UserRegistrationData) => Promise<void>;
   signOut: () => Promise<void>;
-  updateUser: (userData: Partial<User>) => void;
+  updateProfile: (data: Partial<User['profile']>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -81,8 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const storedToken = await AsyncStorage.getItem('@AppBeneficios:token');
       if (storedToken) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-  
-        // Busca os dados reais do usuário no backend
+        // Faz a chamada para a rota de perfil correta no backend
         const response = await axios.get(`${API_URL}/profile`);
         setUser(response.data);
       }
@@ -97,15 +105,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/login`, { email, password });
+      // Faz a chamada para a rota de login no backend
+      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
       const { token } = response.data;
   
       await AsyncStorage.setItem('@AppBeneficios:token', token);
   
-      // Define o token no axios para futuras requisições
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   
-      // Busca os dados reais do usuário logado
+      // Busca os dados do usuário logado na rota de perfil
       const profileResponse = await axios.get(`${API_URL}/profile`);
       setUser(profileResponse.data);
   
@@ -131,7 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (data: UserRegistrationData) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/register`, data);
+      // Faz a chamada para a rota de registro no backend
+      const response = await axios.post(`${API_URL}/auth/register`, data);
       Alert.alert('Sucesso', response.data.message);
     } catch (error) {
       console.error('Erro no cadastro:', error.response?.data || error.message);
@@ -141,13 +150,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateUser = (userData: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...userData };
+  const updateProfile = async (profileData: Partial<User['profile']>) => {
+    setIsLoading(true);
+    try {
+      // Faz a chamada para a rota de atualização de perfil no backend
+      const response = await axios.put(`${API_URL}/profile`, profileData);
+  
+      const updatedUser = response.data;
       setUser(updatedUser);
-      console.warn("Função updateUser precisa ser implementada para salvar os dados no backend.");
+  
+      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error.response?.data || error.message);
+      Alert.alert('Erro', error.response?.data?.message || 'Falha ao atualizar o perfil. Tente novamente.');
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const completeMission = async (missionId: string) => {
+        setIsLoading(true);
+        try {
+            const response = await axios.post(`${API_URL}/missions/complete-first-mission`, { missionId });
+
+            // Atualiza o estado do usuário com os dados recebidos do backend
+            setUser(response.data.user);
+            Alert.alert('Sucesso', response.data.message);
+
+            return true; // Retorna true para indicar que a missão foi completada
+        } catch (error) {
+            console.error('Erro ao completar missão:', error.response?.data || error.message);
+            Alert.alert('Erro', error.response?.data?.message || 'Falha ao completar a missão.');
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+      };
 
   return (
     <AuthContext.Provider
@@ -158,7 +197,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signIn,
         signUp,
         signOut,
-        updateUser,
+        updateProfile,
+        completeMission,
       }}
     >
       {children}

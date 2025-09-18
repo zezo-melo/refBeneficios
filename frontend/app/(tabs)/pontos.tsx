@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../components/Header';
 import BackButton from '@/components/BackButton';
+import { useAuth } from '../../contexts/AuthContext';
+
 
 
 // Dados do usuário
 const USER_DATA = {
-  totalPoints: 420,
   level: 'Prata',
   nextLevel: 'Ouro',
   pointsToNextLevel: 80,
@@ -92,7 +93,44 @@ const MONTHLY_STATS = [
 ];
 
 export default function PontosScreen() {
+  const { user } = useAuth();  
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('Mês');
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('userToken');
+      console.log("TOKEN RECUPERADO:", token);
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch('http://localhost:3000/api/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile');
+      }
+
+      const data = await response.json();
+      setProfile(data);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+  
 
   const getStatusIcon = (type: string) => {
     const icons: { [key: string]: string } = {
@@ -128,7 +166,7 @@ export default function PontosScreen() {
           <View style={styles.pointsCard}>
             <View style={styles.pointsMain}>
               <Text style={styles.pointsLabel}>Seus Pontos</Text>
-              <Text style={styles.pointsValue}>{USER_DATA.totalPoints}</Text>
+              <Text style={styles.pointsValue}>{user?.points || 0}</Text>
             </View>
             <View style={styles.levelInfo}>
               <Text style={styles.levelLabel}>Nível {USER_DATA.level}</Text>

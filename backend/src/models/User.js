@@ -32,6 +32,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  points: {
+    type: Number,
+    default: 0 // Inicia com 0 pontos por padrão
+  },
+  completedMissions: {
+    type: Number,
+    default: 0 // Inicia com 0 pontos por padrão
+  },
   phone: { 
     type: String,
     required: true,

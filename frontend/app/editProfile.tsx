@@ -15,13 +15,12 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Header from '@/components/Header';
 
 export default function UpdateProfileScreen() {
-  const { user, updateProfile, isLoading } = useAuth();
+  const { user, updateProfile, isLoading, completeMission } = useAuth();
   const [name, setName] = useState('');
   const [dob, setDob] = useState(new Date());
   const [dobDisplay, setDobDisplay] = useState('');
@@ -100,8 +99,9 @@ export default function UpdateProfileScreen() {
 
     try {
       await updateProfile(updatedData);
+      await completeMission('1');
       Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
-      router.back(); // Volta para a tela anterior
+      router.replace('/profile'); 
     } catch (error) {
       Alert.alert('Erro', error.message || 'Falha ao atualizar o perfil. Tente novamente.');
     }

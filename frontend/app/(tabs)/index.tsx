@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../components/Header';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,59 +22,91 @@ const MISSIONS = [
 
 export default function HomeScreen() {
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  const router = useRouter();
   const { user } = useAuth();
 
 
-  const handleMissionPress = (missionId: string) => {
-    setSelectedMissionId(selectedMissionId === missionId ? null : missionId);
-  };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <Header />
-      
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Área de saudação */}
-        <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Olá! {formatName(user?.name)} 👋</Text>
-          <Text style={styles.subtitleText}>Pronto para mais uma missão?</Text>
-        </View>
+    const handleMissionPress = (missionId: string) => {
+          setSelectedMissionId(selectedMissionId === missionId ? null : missionId);
+      };
 
-        {/* Container das missões */}
-        <View style={styles.missionsContainer}>
-          {/* Linha central */}
-          <View style={styles.centralLine} />
-          
-          {/* Missões */}
-          {MISSIONS.map((mission, index) => (
-            <TouchableOpacity
-              key={mission.id}
-              style={[
-                styles.missionNode,
-                { top: 60 + (index * 220) } // Reduzido de 80 para 60
-              ]}
-              onPress={() => handleMissionPress(mission.id)}
+    const handleFirstMissionAction = () => {
+        if (user?.profile?.name) {
+            // Se o perfil já estiver preenchido, a missão já está completa
+            alert('Missão já completada!');
+        } else {
+            // Se não, leva o usuário para a tela de edição de perfil
+            router.push('/editProfile');
+        }
+    };
+
+    const isMissionCompleted = (missionId: string) => {
+        // Lógica para verificar se a missão está completa
+        if (missionId === '1' && user?.profile?.name) {
+            return user?.missions >= 1;
+        }
+        // Lógica futura para outras missões...
+        return false;
+    };
+
+return (
+        <SafeAreaView style={styles.safeArea}>
+            <Header />
+            <ScrollView 
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
-              {/* Círculo da missão */}
-              <View style={styles.missionCircle}>
-                <Text style={styles.missionNumber}>{index + 1}</Text>
+              <View style={styles.greetingSection}>
+                <Text style={styles.greetingText}>Olá! {formatName(user?.name)} 👋</Text>
+                <Text style={styles.subtitleText}>Pronto para mais uma missão?</Text>
               </View>
-              
-              {/* Balão de informações da missão */}
-              {selectedMissionId === mission.id && (
-                <View style={styles.missionInfo}>
-                  <Text style={styles.missionTitle}>{mission.title}</Text>
-                  <TouchableOpacity>
-                    <Text style={styles.btnMission}>Começar {mission.points}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
+
+                {/* Container das missões */}
+                <View style={styles.missionsContainer}>
+                    {/* Linha central */}
+                    <View style={styles.centralLine} />
+
+                    {/* Missões */}
+                    {MISSIONS.map((mission, index) => {
+                        const isCompleted = isMissionCompleted(mission.id);
+                        return (
+                            <TouchableOpacity
+                                key={mission.id}
+                                style={[
+                                    styles.missionNode,
+                                    { top: 60 + (index * 220) } 
+                                ]}
+                                onPress={() => handleMissionPress(mission.id)}
+                            >
+                                {/* Círculo da missão */}
+                                <View style={[styles.missionCircle, isCompleted && styles.completedCircle]}>
+                                    <Text style={styles.missionNumber}>{isCompleted ? '✓' : index + 1}</Text>
+                                </View>
+
+                                {/* Balão de informações da missão */}
+                                {selectedMissionId === mission.id && (
+                                    <View style={styles.missionInfo}>
+                                        <Text style={styles.missionTitle}>{mission.title}</Text>
+                                        {mission.id === '1' ? (
+                                            <TouchableOpacity onPress={handleFirstMissionAction}>
+                                                <Text style={styles.btnMission}>
+                                                    {isCompleted ? 'Concluída' : 'Começar +10 pontos'}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity>
+                                                <Text style={styles.btnMission}>
+                                                    Começar {mission.points}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                        );
+                    })}
           
           {/* Espaço extra no final para rolagem */}
           <View style={styles.bottomSpacer} />
@@ -97,8 +130,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#ececec',
     paddingTop: 20,
     paddingBottom: 200,
-
   },
+  completedCircle: {
+        backgroundColor: '#1a5d2b',
+    },
   greetingSection: {
     paddingHorizontal: 20,
     paddingTop: 15, // Reduzido de 20 para 15
