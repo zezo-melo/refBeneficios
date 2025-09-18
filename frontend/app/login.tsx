@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   View
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,6 +46,14 @@ export default function LoginScreen() {
   };
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -197,6 +206,8 @@ export default function LoginScreen() {
         </View>        
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -246,14 +257,13 @@ logo: {
     fontSize: 16,
     color: '#4a7f37',
     textAlign: 'center',
-    marginBottom: 100,
+    marginBottom: 20,
   },
   form: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: 20,
     color: '#fff',
-    marginTop: 40,
 
   },
   inputContainer: {
@@ -322,13 +332,13 @@ logo: {
     flex: 1,
     height: 1,
     backgroundColor: '#4a7f37',
-    marginBottom: 10
+    marginBottom: 20
   },
   dividerText: {
     color: '#4a7f37',
     fontSize: 14,
     marginHorizontal: 16,
-    marginBottom: 10
+    marginBottom: 20
 
   },
   registerButton: {
@@ -353,7 +363,6 @@ logo: {
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
-    marginTop: 100,
     marginBottom:60,
 
   },

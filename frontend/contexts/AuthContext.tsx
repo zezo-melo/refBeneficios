@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 // Simulação de AsyncStorage para o ambiente do Canvas
 const asyncStorage = {
@@ -19,16 +21,36 @@ const Alert = {
 
 // Objeto de configuração para URLs da API
 const API_CONFIG = {
+<<<<<<< HEAD
   // A URL base da sua API sem o caminho de rota
   emulator: 'http://10.0.2.2:3000/api', 
+=======
+  // Para testar no emulador Android
+  emulator: 'http://10.0.2.2:3000/api/auth',
+>>>>>>> 1e1c73818b072b7e08d475c360e08b1ae4dfaef8
   // Para testar em um celular na mesma rede local que o seu PC
   localNetwork: 'http://192.168.1.15:3000/api',
   // Para o seu backend hospedado no Vercel
   vercel: 'https://seu-backend-incrivel.vercel.app/api',
 };
 
+<<<<<<< HEAD
 // A URL base que aponta para o seu backend
 const API_URL = API_CONFIG.emulator; 
+=======
+// Função para detectar automaticamente qual URL usar
+const getApiUrl = () => {
+  if (Platform.OS === 'android' && !Constants.appOwnership) {
+    // Emulador Android
+    return API_CONFIG.emulator;
+  } else {
+    // Celular físico (Expo Go ou build)
+    return API_CONFIG.localNetwork;
+  }
+};
+
+const API_URL = getApiUrl();
+>>>>>>> 1e1c73818b072b7e08d475c360e08b1ae4dfaef8
 
 interface User {
   id: string;
@@ -90,42 +112,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const storedToken = await AsyncStorage.getItem('@AppBeneficios:token');
       if (storedToken) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+<<<<<<< HEAD
         // Faz a chamada para a rota de perfil correta no backend
+=======
+
+        // Busca os dados reais do usuário no backend
+>>>>>>> 1e1c73818b072b7e08d475c360e08b1ae4dfaef8
         const response = await axios.get(`${API_URL}/profile`);
         setUser(response.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('Erro ao carregar usuário:', error.response?.data || error.message);
       setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
       // Faz a chamada para a rota de login no backend
       const response = await axios.post(`${API_URL}/auth/login`, { email, password });
       const { token } = response.data;
-  
+
       await AsyncStorage.setItem('@AppBeneficios:token', token);
+<<<<<<< HEAD
   
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   
       // Busca os dados do usuário logado na rota de perfil
+=======
+
+      // Define o token no axios para futuras requisições
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // Busca os dados reais do usuário logado
+>>>>>>> 1e1c73818b072b7e08d475c360e08b1ae4dfaef8
       const profileResponse = await axios.get(`${API_URL}/profile`);
       setUser(profileResponse.data);
-  
+
       Alert.alert('Sucesso', 'Login realizado com sucesso!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no login:', error.response?.data || error.message);
       throw new Error('Falha na autenticação. Verifique seu email e senha.');
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   const signOut = async () => {
     try {
       setUser(null);
@@ -142,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Faz a chamada para a rota de registro no backend
       const response = await axios.post(`${API_URL}/auth/register`, data);
       Alert.alert('Sucesso', response.data.message);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no cadastro:', error.response?.data || error.message);
       throw new Error('Falha no cadastro. Verifique os dados ou tente novamente.');
     } finally {
