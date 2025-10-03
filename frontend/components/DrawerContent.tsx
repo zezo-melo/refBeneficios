@@ -126,17 +126,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 800,
     color: '#4a7f37',
-    textAlign: 'center',
+    marginLeft: 0,
   },
   userInfo: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#4a7f37',
-    marginLeft: -10,
   },
   userLevel: {
     fontSize: 14,

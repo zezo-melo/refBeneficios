@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 80,
     marginLeft: -40,
+    marginRight: 20,
   },
   fallbackText: {
     fontSize: 16,
@@ -179,8 +180,5 @@ const styles = StyleSheet.create({
   userLevel: {
     fontSize: 12,
     color: '#4a7f37',
-  },
-  logoutButton: {
-    padding: 8,
   },
 }); 
