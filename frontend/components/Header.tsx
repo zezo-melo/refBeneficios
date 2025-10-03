@@ -181,4 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#4a7f37',
   },
+  logoutButton: {
+    padding: 0,
+  },
 }); 
