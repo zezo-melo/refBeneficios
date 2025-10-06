@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     paddingBottom: 200,
   },
   completedCircle: {
-        backgroundColor: '#1a5d2b',
+        backgroundColor: '#4a7f37',
     },
   greetingSection: {
     paddingHorizontal: 20,
