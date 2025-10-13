@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import Header from '@/components/Header';
 import BackButton from '@/components/BackButton';
@@ -25,19 +24,23 @@ export default function UpdateProfileScreen() {
   const { user, updateProfile, isLoading } = useAuth();
   const router = useRouter();
 
-  // Inicializa o estado com os dados do usuário ou com strings vazias
   const [name, setName] = useState(user?.profile?.name || user?.name || '');
   const [phone, setPhone] = useState(user?.profile?.phone || user?.phone || '');
-  // Os campos abaixo são opcionais, inicializa como string vazia se não existir
-  const [photoUrl, setPhotoUrl] = useState<string | null>((user?.profile?.photoUrl as string) || '');
+
+const [photoUrl, setPhotoUrl] = useState<string | null>(
+  user?.profile?.photoUrl && user.profile.photoUrl.trim() !== '' 
+    ? String(user.profile.photoUrl) 
+    : user?.photoUrl && user.photoUrl.trim() !== '' 
+      ? String(user.photoUrl) 
+      : null
+);
+
   const [address, setAddress] = useState((user?.profile?.address as string) || '');
   const [city, setCity] = useState((user?.profile?.city as string) || '');
   const [state, setState] = useState((user?.profile?.state as string) || '');
   const [zipCode, setZipCode] = useState((user?.profile?.zipCode as string) || '');
   const [bio, setBio] = useState((user?.profile?.bio as string) || '');
 
-  // O useEffect não é mais necessário porque o estado é inicializado diretamente com os dados do usuário
-  
   const handleImagePicker = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -87,6 +90,8 @@ export default function UpdateProfileScreen() {
     return userName ? userName.charAt(0).toUpperCase() : '';
   };
 
+  const hasValidPhoto = !!photoUrl && photoUrl.trim() !== '';
+
   return (
     <SafeAreaView style={styles.container}>
       <Header />
@@ -96,18 +101,18 @@ export default function UpdateProfileScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-          <BackButton />
+            <BackButton />
             <View style={styles.header}>
               <Text style={styles.title}>Atualizar Perfil</Text>
               <Text style={styles.subtitle}>Altere as suas informações da conta</Text>
             </View>
 
             <TouchableOpacity onPress={handleImagePicker} style={styles.profileImageContainer}>
-              {photoUrl ? (
-                <Image source={{ uri: photoUrl }} style={styles.profileImage} />
+              {hasValidPhoto ? (
+                <Image source={{ uri: photoUrl as string }} style={styles.profileImage} />
               ) : (
                 <View style={styles.initialContainer}>
-                  <Text style={styles.initialText}>{getInitial(user?.name || '')}</Text>
+                  <Text style={styles.initialText}>{getInitial(user?.name || name)}</Text>
                 </View>
               )}
               <View style={styles.cameraIcon}>
@@ -256,13 +261,8 @@ export default function UpdateProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  keyboardView: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
+  keyboardView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -271,26 +271,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingTop: 40,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'space-between',
-  },
-  header: {
-    alignItems: 'center',
-    paddingBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#4a7f37',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
+  content: { flex: 1, paddingHorizontal: 24, justifyContent: 'space-between' },
+  header: { alignItems: 'center', paddingBottom: 40 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#4a7f37', marginBottom: 8 },
+  subtitle: { fontSize: 16, color: '#666', textAlign: 'center' },
   profileImageContainer: {
     width: 120,
     height: 120,
@@ -301,25 +285,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     marginBottom: 20,
+    overflow: 'hidden',
   },
-  profileImage: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-  },
+  profileImage: { width: '100%', height: '100%' },
   initialContainer: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: '100%',
+    height: '100%',
     backgroundColor: '#4a7f37',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  initialText: {
-    color: '#fff',
-    fontSize: 50,
-    fontWeight: 'bold',
-  },
+  initialText: { color: '#fff', fontSize: 50, fontWeight: 'bold' },
   cameraIcon: {
     position: 'absolute',
     bottom: 5,
@@ -330,12 +306,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
-  form: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
+  form: { flex: 1, justifyContent: 'center', paddingVertical: 20, paddingBottom: 40 },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -347,23 +318,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e9ecef',
   },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-    paddingVertical: 16,
-  },
-  bioInput: {
-    minHeight: 100,
-    textAlignVertical: 'center',
-  },
-  inputDisabled: {
-    backgroundColor: '#e9ecef',
-    color: '#999',
-  },
+  inputIcon: { marginRight: 12 },
+  input: { flex: 1, fontSize: 16, color: '#333', paddingVertical: 16 },
+  bioInput: { minHeight: 100, textAlignVertical: 'center' },
+  inputDisabled: { backgroundColor: '#e9ecef', color: '#999' },
   updateButton: {
     backgroundColor: '#4a7f37',
     borderRadius: 12,
@@ -379,14 +337,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  updateButtonDisabled: {
-    backgroundColor: '#ccc',
-    opacity: 0.7,
-  },
-  updateButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    marginRight: 8,
-  },
+  updateButtonDisabled: { backgroundColor: '#ccc', opacity: 0.7 },
+  updateButtonText: { color: '#fff', fontSize: 18, fontWeight: '600', marginRight: 8 },
 });
