@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Ima
 import Header from '../../components/Header';
 import { API_URL } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RankItem = { position: number; name: string; points: number; photoUrl?: string | null };
 
@@ -29,8 +30,19 @@ export default function RankScreen() {
       try {
         setLoading(true);
         setError(null);
+        
+        // Buscar o token do AsyncStorage
+        const token = await AsyncStorage.getItem('@AppBeneficios:token');
+        
+        if (!token) {
+          throw new Error('Usuário não autenticado');
+        }
+        
         const res = await fetch(`${API_URL}/leaderboard?limit=${pageSize}&skip=0`, {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
         });
         if (!res.ok) throw new Error('Falha ao carregar ranking');
         const data = await res.json();
@@ -51,8 +63,19 @@ export default function RankScreen() {
     if (leaderboard.length >= total) return;
     try {
       setIsFetchingMore(true);
+      
+      // Buscar o token do AsyncStorage
+      const token = await AsyncStorage.getItem('@AppBeneficios:token');
+      
+      if (!token) {
+        throw new Error('Usuário não autenticado');
+      }
+      
       const res = await fetch(`${API_URL}/leaderboard?limit=${pageSize}&skip=${leaderboard.length}`, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
       });
       if (!res.ok) throw new Error('Falha ao carregar mais');
       const data = await res.json();
