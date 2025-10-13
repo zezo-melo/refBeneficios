@@ -99,7 +99,7 @@ export default function LoginScreen() {
                 </Swiper>
               </View>
             </View>
-            <Text style={styles.title}>App Benefícios</Text>
+            <Text style={styles.title}>App do Conhecimento</Text>
             <Text style={styles.subtitle}>Faça login para continuar</Text>
           </View>
 

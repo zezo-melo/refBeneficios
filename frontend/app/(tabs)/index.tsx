@@ -59,7 +59,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.greetingSectionMentorh}>
-          <Text style={styles.greetingTextMentorh}>Seu MentoRH de conhecimentos</Text>
+          <Text style={styles.greetingTextMentorh}>Seu MentoRH de Conhecimentos</Text>
         </View>
         <View style={styles.greetingSection}>
           <Text style={styles.greetingText}>Olá! {formatName(user?.name)} 👋</Text>
