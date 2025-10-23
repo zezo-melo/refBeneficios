@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Header from '../../components/Header';
+import BonusChest from '../../components/BonusChest';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatName } from "../../utils/formatName";
 
@@ -67,41 +68,7 @@ const MascoteIllustration = ({ position, imageSource }: { position: 'left' | 'ri
   </View>
 );
 
-// 3. Baú de Bônus (mantido, mas com a nova prop isLocked)
-const BonusChestItem = ({ chest, onOpen, isLocked }: { chest: any, onOpen: (id: string) => void, isLocked: boolean }) => {
-    const isOpened = chest.opened;
-    
-    let color = '#FF9800'; 
-    let icon; 
-    let opacity = 1;
-
-    if (isOpened) {
-        color = '#4a7f37'; 
-        opacity = 1;
-        icon = <Ionicons name="checkmark-circle" size={36} color="#fff" />;
-    } else if (isLocked) {
-        color = '#B0B0B0'; 
-        opacity = 0.6;
-        icon = <MaterialCommunityIcons name="lock-outline" size={36} color="#fff" />;
-    } else {
-        icon = <MaterialCommunityIcons name="treasure-chest" size={36} color="#fff" />;
-    }
-    
-    return (
-        <View style={styles.chestWrapper}>
-            <TouchableOpacity
-                style={[styles.chestButton, { backgroundColor: color, opacity: opacity }]}
-                onPress={() => onOpen(chest.id)}
-                disabled={isOpened || isLocked}
-            >
-                {icon} 
-                <Text style={styles.chestText}>
-                    {isOpened ? 'Resgatado!' : (isLocked ? 'Baú Bloqueado' : `BÔNUS +${chest.points} XP`)}
-                </Text>
-            </TouchableOpacity>
-        </View>
-    );
-};
+// Componente BonusChestItem removido - agora usando o componente BonusChest
 
 
 // --- TELA PRINCIPAL E LÓGICA ---
@@ -110,15 +77,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const initialOpenedState = user?.isChestRedeemed || false; 
-
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
-  const [bonusChestState, setBonusChestState] = useState({ 
-      id: 'chest_1', 
-      type: 'chest', 
-      points: 10, 
-      opened: initialOpenedState 
-  });
 
   const isMissionCompleted = (missionId: string) => {
     // Lógica de simulação mantida
@@ -131,29 +90,8 @@ export default function HomeScreen() {
     return false;
   };
 
-  const isChestLocked = () => {
-    const missionProfileCompleted = isMissionCompleted('profile');
-    const mission2Completed = isMissionCompleted('2');
-    return !(missionProfileCompleted && mission2Completed);
-  };
-    
   const handleMissionPress = (missionId: string) => {
     setSelectedMissionId(selectedMissionId === missionId ? null : missionId);
-  };
-    
-  const handleOpenChest = (id: string) => {
-    if (isChestLocked()) {
-        alert('Conclua as missões anteriores para abrir este baú!');
-        return;
-    }
-
-    if (bonusChestState.opened || user?.isChestRedeemed) {
-      console.log("Baú já foi resgatado. Ação ignorada.");
-      return;
-    }
-        
-    alert(`Parabéns! Você ganhou ${bonusChestState.points} pontos de bônus!`); 
-    setBonusChestState(prev => ({ ...prev, opened: true }));
   };
 
   const handleAction = (mission: Mission) => {
@@ -176,7 +114,7 @@ export default function HomeScreen() {
         items.push(mission);
         
         if (index === 1) { // Posição do Baú mantida
-            items.push(bonusChestState);
+            items.push({ id: 'chest_1', type: 'chest', points: 10, opened: false });
         }
     });
     return items;
@@ -218,7 +156,6 @@ export default function HomeScreen() {
     return null; // Não exibe o mascote
   };
   
-  const chestLockedStatus = isChestLocked(); 
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -248,11 +185,11 @@ export default function HomeScreen() {
             if (item.type === 'chest') {
               // Item especial: Baú de Bônus (Mantém a posição central)
               return (
-                <BonusChestItem 
+                <BonusChest 
                     key={item.id} 
-                    chest={item} 
-                    onOpen={handleOpenChest} 
-                    isLocked={chestLockedStatus}
+                    chestId={item.id}
+                    points={item.points}
+                    requiredMissions={['profile', 'quiz2']}
                 />
               );
             }
@@ -270,7 +207,7 @@ export default function HomeScreen() {
             if (missionIndex > 0) {
               // Se for a missão seguinte ao baú (índice 2), depende do baú
               if (missionIndex === 2) {
-                isPreviousCompleted = bonusChestState.opened;
+                isPreviousCompleted = user?.chestsOpened?.includes('chest_1') || false;
               } 
               // Se não for a missão 0 ou a missão 2, depende da missão anterior
               else {
@@ -511,31 +448,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#aaa',
     color: '#fff',
   },
-  // --- BAÚ DE BÔNUS (Inserido na trilha) ---
-  chestWrapper: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 150, 
-    zIndex: 10, 
-  },
-  chestButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#D32F2F', 
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 12,
-  },
-  chestText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginTop: 5,
-  },
+  // Estilos do baú removidos - agora no componente BonusChest
   // --- ESTILOS DO MASCOTE LATERAL ---
   illustrationContainer: {
     position: 'absolute', 

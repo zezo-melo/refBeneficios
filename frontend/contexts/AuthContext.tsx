@@ -37,6 +37,9 @@ interface User {
     state?: string;
     // Se seu User.js tiver zipCode, adicione aqui
   };
+
+  // CAMPOS DE BAÚS E MISSÕES
+  chestsOpened?: string[];
 }
 
 interface UserRegistrationData {
@@ -58,6 +61,7 @@ interface AuthContextData {
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   refreshProfile: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -169,6 +173,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/profile`);
+      setUser(response.data);
+    } catch (error) {
+      console.log('Erro ao atualizar dados do usuário:', (error as any).response?.data || (error as any).message);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     console.log('🔐 [AuthContext] Iniciando login...');
     setIsLoading(true);
@@ -266,6 +279,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signOut,
         updateProfile,
         refreshProfile,
+        refreshUser,
       }}
     >
       {children}

@@ -68,6 +68,10 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  chestsOpened: {
+    type: [String],
+    default: [],
+  },
   createdAt: { 
     type: Date,
     default: Date.now,

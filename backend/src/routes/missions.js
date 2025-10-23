@@ -74,3 +74,41 @@ router.post('/complete-quiz-mission', authMiddleware, async (req, res) => {
     return res.status(500).json({ message: 'Erro do servidor.' });
   }
 });
+
+// Rota para abrir baú de bônus
+router.post('/open-chest', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { chestId, points } = req.body;
+
+    if (!chestId || !points) {
+      return res.status(400).json({ message: 'ID do baú e pontos são obrigatórios.' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    // Verificar se o baú já foi aberto
+    if (user.chestsOpened && user.chestsOpened.includes(chestId)) {
+      return res.status(400).json({ message: 'Este baú já foi aberto.' });
+    }
+
+    // Adicionar pontos e marcar baú como aberto
+    user.points += points;
+    user.chestsOpened = Array.isArray(user.chestsOpened) ? user.chestsOpened : [];
+    user.chestsOpened.push(chestId);
+    
+    await user.save();
+
+    return res.json({
+      message: `Baú aberto! Você ganhou ${points} pontos de bônus!`,
+      user,
+      pointsAwarded: points
+    });
+  } catch (error) {
+    console.error('Erro ao abrir baú:', error);
+    return res.status(500).json({ message: 'Erro do servidor.' });
+  }
+});
