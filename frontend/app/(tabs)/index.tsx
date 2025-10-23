@@ -17,18 +17,20 @@ type Mission = {
 
 type Item = Mission | { id: string; type: 'chest'; points: number; opened: boolean };
 
-// Missões originais (mantida)
+// Missões originais (atualizada com novas missões)
 const ORIGINAL_MISSIONS: Mission[] = [
   { id: 'profile', title: 'Preencha seu perfil', points: '+10 pontos', screen: 'editProfile' },
   { id: '2', title: 'Participe de um desafio', points: '+20 pontos', screen: 'quiz' },
-  { id: '3', title: 'Compre conteúdo', points: '+15 pontos' },
-  { id: '4', title: 'Ganhe um super desconto', points: '+15 pontos' },
-  { id: '5', title: 'Revise o conteúdo da semana', points: '+5 pontos' },
-  { id: '6', title: 'Convide um amigo', points: '+25 pontos' },
-  { id: '7', title: 'Complete 3 missões', points: '+30 pontos' },
-  { id: '8', title: 'Faça login por 7 dias', points: '+50 pontos' },
-  { id: '9', title: 'Avalie o app', points: '+15 pontos' },
-  { id: '10', title: 'Compartilhe nas redes', points: '+20 pontos' },
+  { id: '3', title: 'Desafio com Vídeo 1', points: '+15 pontos', screen: 'quiz3' },
+  { id: '4', title: 'Desafio com Vídeo 2', points: '+15 pontos', screen: 'quiz4' },
+  { id: '5', title: 'Compre conteúdo', points: '+15 pontos' },
+  { id: '6', title: 'Ganhe um super desconto', points: '+15 pontos' },
+  { id: '7', title: 'Revise o conteúdo da semana', points: '+5 pontos' },
+  { id: '8', title: 'Convide um amigo', points: '+25 pontos' },
+  { id: '9', title: 'Complete 3 missões', points: '+30 pontos' },
+  { id: '10', title: 'Faça login por 7 dias', points: '+50 pontos' },
+  { id: '11', title: 'Avalie o app', points: '+15 pontos' },
+  { id: '12', title: 'Compartilhe nas redes', points: '+20 pontos' },
 ];
 
 // **********************************************
@@ -87,6 +89,12 @@ export default function HomeScreen() {
     if (missionId === '2') {
       return user?.missionsCompleted?.includes('quiz2') === true;
     }
+    if (missionId === '3') {
+      return user?.missionsCompleted?.includes('quiz3') === true;
+    }
+    if (missionId === '4') {
+      return user?.missionsCompleted?.includes('quiz4') === true;
+    }
     return false;
   };
 
@@ -101,6 +109,10 @@ export default function HomeScreen() {
       router.push('/editProfile');
     } else if (mission.screen === 'quiz') {
       router.push('/quiz' as any); 
+    } else if (mission.screen === 'quiz3') {
+      router.push('/quiz3' as any);
+    } else if (mission.screen === 'quiz4') {
+      router.push('/quiz4' as any);
     } else {
       alert(`Iniciando missão: ${mission.title}`);
     }
@@ -113,8 +125,11 @@ export default function HomeScreen() {
     ORIGINAL_MISSIONS.forEach((mission, index) => {
         items.push(mission);
         
-        if (index === 1) { // Posição do Baú mantida
+        if (index === 1) { // Primeiro baú após missão 2
             items.push({ id: 'chest_1', type: 'chest', points: 10, opened: false });
+        }
+        if (index === 3) { // Segundo baú após missão 4
+            items.push({ id: 'chest_2', type: 'chest', points: 15, opened: false });
         }
     });
     return items;
@@ -183,13 +198,18 @@ export default function HomeScreen() {
 
           {renderItems().map((item, index) => {
             if (item.type === 'chest') {
-              // Item especial: Baú de Bônus (Mantém a posição central)
+              // Item especial: Baú de Bônus
+              let requiredMissions = ['profile', 'quiz2'];
+              if (item.id === 'chest_2') {
+                requiredMissions = ['profile', 'quiz2', 'quiz3', 'quiz4'];
+              }
+              
               return (
                 <BonusChest 
                     key={item.id} 
                     chestId={item.id}
                     points={item.points}
-                    requiredMissions={['profile', 'quiz2']}
+                    requiredMissions={requiredMissions}
                 />
               );
             }
@@ -202,16 +222,19 @@ export default function HomeScreen() {
             const missionIndex = ORIGINAL_MISSIONS.findIndex(m => m.id === mission.id);
             const displayMissionNumber = missionIndex + 1;
             
-            // Lógica de Desbloqueio (Corrigida e simplificada)
+            // Lógica de Desbloqueio (Atualizada para incluir novos baús)
             let isPreviousCompleted = true; // A primeira missão está sempre desbloqueada
             if (missionIndex > 0) {
-              // Se for a missão seguinte ao baú (índice 2), depende do baú
+              // Se for a missão seguinte ao primeiro baú (índice 2), depende do baú
               if (missionIndex === 2) {
                 isPreviousCompleted = user?.chestsOpened?.includes('chest_1') || false;
               } 
-              // Se não for a missão 0 ou a missão 2, depende da missão anterior
+              // Se for a missão seguinte ao segundo baú (índice 4), depende do baú
+              else if (missionIndex === 4) {
+                isPreviousCompleted = user?.chestsOpened?.includes('chest_2') || false;
+              }
+              // Se não for a missão 0 ou as missões após baús, depende da missão anterior
               else {
-                // Se a missão anterior for o baú, olhamos a missão que veio antes do baú (índice 1)
                 const prevMissionId = ORIGINAL_MISSIONS[missionIndex - 1]?.id;
                 isPreviousCompleted = isMissionCompleted(prevMissionId);
               }

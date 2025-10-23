@@ -51,6 +51,12 @@ const BonusChest: React.FC<BonusChestProps> = ({
     if (missionId === 'quiz2') {
       return user?.missionsCompleted?.includes('quiz2') === true;
     }
+    if (missionId === 'quiz3') {
+      return user?.missionsCompleted?.includes('quiz3') === true;
+    }
+    if (missionId === 'quiz4') {
+      return user?.missionsCompleted?.includes('quiz4') === true;
+    }
     return false;
   };
 

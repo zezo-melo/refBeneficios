@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { API_URL } from '../constants';
@@ -19,7 +19,7 @@ type MissionData = {
   questions: Question[];
 };
 
-export default function QuizMission() {
+export default function QuizMission3() {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<'A' | 'B' | 'C' | 'D' | null>(null);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
@@ -32,14 +32,13 @@ export default function QuizMission() {
   
   const router = useRouter();
   const { refreshProfile } = useAuth();
-  const { missionId = 'quiz2' } = useLocalSearchParams();
 
   // Carregar dados da missão
   useEffect(() => {
     const loadMissionData = async () => {
       try {
         const token = await AsyncStorage.getItem('@AppBeneficios:token');
-        const response = await axios.get(`${API_URL}/missions/mission/${missionId}`, {
+        const response = await axios.get(`${API_URL}/missions/mission/quiz3`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMissionData(response.data);
@@ -52,7 +51,7 @@ export default function QuizMission() {
     };
 
     loadMissionData();
-  }, [missionId]);
+  }, []);
 
   const question = useMemo(() => missionData?.questions[current], [current, missionData]);
   const isLast = current === (missionData?.questions.length || 0) - 1;
@@ -92,14 +91,7 @@ export default function QuizMission() {
     const finalCorrect = isAnswerCorrect ? correctCount + 1 : correctCount;
     
     try {
-      let endpoint = '/missions/complete-quiz-mission';
-      if (missionId === 'quiz3') {
-        endpoint = '/missions/complete-quiz-mission-3';
-      } else if (missionId === 'quiz4') {
-        endpoint = '/missions/complete-quiz-mission-4';
-      }
-      
-      await axios.post(`${API_URL}${endpoint}`, { 
+      await axios.post(`${API_URL}/missions/complete-quiz-mission-3`, { 
         correctCount: finalCorrect,
         timeSpent: timeSpent
       });
@@ -115,9 +107,9 @@ export default function QuizMission() {
     if (isLast) {
       const pendingCorrect = feedback === 'correct' ? 1 : 0;
       const totalCorrect = correctCount + pendingCorrect;
-      const basePoints = totalCorrect * 2;
-      const timeBonus = Math.max(0, Math.floor((300 - timeSpent) / 30)); // Bônus baseado no tempo
-      const awarded = Math.min(30, basePoints + timeBonus);
+      const basePoints = totalCorrect * 5;
+      const timeBonus = Math.max(0, Math.floor((180 - timeSpent) / 36)); // Bônus baseado no tempo
+      const awarded = Math.min(15, basePoints + timeBonus);
       return `Finalizar (+${awarded} pontos)`;
     }
     return 'Próxima';
@@ -156,7 +148,7 @@ export default function QuizMission() {
       <QuizIntro
         title={missionData.title}
         description={missionData.description}
-        videoUrl={missionData.videoUrl}
+        videoUrl={missionData.videoUrl || 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}
         onStart={handleStartQuiz}
         onBack={() => router.back()}
       />
@@ -178,7 +170,7 @@ export default function QuizMission() {
           <View style={[styles.progressBar, { width: `${((current + 1) / (missionData.questions.length)) * 100}%` }]} />
         </View>
 
-        <Text style={styles.heading}>Participe de um desafio</Text>
+        <Text style={styles.heading}>Desafio com Vídeo</Text>
         <Text style={styles.subtitle}>Questão {current + 1} de {missionData.questions.length}</Text>
 
         {question && (
