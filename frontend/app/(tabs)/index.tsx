@@ -12,17 +12,19 @@ type Mission = {
   id: string;
   title: string;
   points: string;
-  screen?: 'editProfile' | 'quiz' | string;
+  // screen agora aceita 'cacaPalavras'
+  screen?: 'editProfile' | 'quiz' | 'quiz3' | 'quiz4' | 'cacaPalavras' | string;
 };
 
 type Item = Mission | { id: string; type: 'chest'; points: number; opened: boolean };
 
-// Missões originais (atualizada com novas missões)
+// Missões originais (atualizada com a nova missão)
 const ORIGINAL_MISSIONS: Mission[] = [
   { id: 'profile', title: 'Preencha seu perfil', points: '+10 pontos', screen: 'editProfile' },
   { id: '2', title: 'Participe de um desafio', points: '+20 pontos', screen: 'quiz' },
   { id: '3', title: 'Desafio com Vídeo 1', points: '+15 pontos', screen: 'quiz3' },
   { id: '4', title: 'Desafio com Vídeo 2', points: '+15 pontos', screen: 'quiz4' },
+  { id: '13', title: 'Caça Palavras da Empresa', points: '+15 pontos', screen: 'cacaPalavras' }, // << NOVA MISSÃO
   { id: '5', title: 'Compre conteúdo', points: '+15 pontos' },
   { id: '6', title: 'Ganhe um super desconto', points: '+15 pontos' },
   { id: '7', title: 'Revise o conteúdo da semana', points: '+5 pontos' },
@@ -95,6 +97,10 @@ export default function HomeScreen() {
     if (missionId === '4') {
       return user?.missionsCompleted?.includes('quiz4') === true;
     }
+    if (missionId === '13') {
+        // A missão 13 (Caça Palavras) usa o ID '13' no backend.
+        return user?.missionsCompleted?.includes('13') === true;
+    }
     return false;
   };
 
@@ -102,6 +108,9 @@ export default function HomeScreen() {
     setSelectedMissionId(selectedMissionId === missionId ? null : missionId);
   };
 
+  // **********************************************
+  // 5. FUNÇÃO DE AÇÃO (handleAction) - Adicionando a nova missão
+  // **********************************************
   const handleAction = (mission: Mission) => {
     if (isMissionCompleted(mission.id)) return;
 
@@ -113,6 +122,8 @@ export default function HomeScreen() {
       router.push('/quiz3' as any);
     } else if (mission.screen === 'quiz4') {
       router.push('/quiz4' as any);
+    } else if (mission.screen === 'cacaPalavras') { // << ROTA DO CAÇA PALAVRAS
+      router.push('/cacaPalavras' as any);
     } else {
       alert(`Iniciando missão: ${mission.title}`);
     }
@@ -128,8 +139,8 @@ export default function HomeScreen() {
         if (index === 1) { // Primeiro baú após missão 2
             items.push({ id: 'chest_1', type: 'chest', points: 10, opened: false });
         }
-        if (index === 3) { // Segundo baú após missão 4
-            items.push({ id: 'chest_2', type: 'chest', points: 15, opened: false });
+        if (index === 4) { // Segundo baú após missão 4 (nova posição devido à nova missão)
+             items.push({ id: 'chest_2', type: 'chest', points: 15, opened: false });
         }
     });
     return items;
@@ -201,7 +212,8 @@ export default function HomeScreen() {
               // Item especial: Baú de Bônus
               let requiredMissions = ['profile', 'quiz2'];
               if (item.id === 'chest_2') {
-                requiredMissions = ['profile', 'quiz2', 'quiz3', 'quiz4'];
+                // Aumentando o número de missões requeridas para o segundo baú
+                requiredMissions = ['profile', 'quiz2', 'quiz3', 'quiz4', '13']; // Adicionei '13' (Caça Palavras)
               }
               
               return (
@@ -225,15 +237,18 @@ export default function HomeScreen() {
             // Lógica de Desbloqueio (Atualizada para incluir novos baús)
             let isPreviousCompleted = true; // A primeira missão está sempre desbloqueada
             if (missionIndex > 0) {
-              // Se for a missão seguinte ao primeiro baú (índice 2), depende do baú
-              if (missionIndex === 2) {
+              // Checa se a missão anterior no array ORIGINAL_MISSIONS foi completada.
+              // Para as missões após um baú, a lógica é mais complexa e depende do baú.
+              
+              // Missão 3 (índice 2) depende do chest_1
+              if (missionIndex === 2) { 
                 isPreviousCompleted = user?.chestsOpened?.includes('chest_1') || false;
               } 
-              // Se for a missão seguinte ao segundo baú (índice 4), depende do baú
-              else if (missionIndex === 4) {
+              // Missão 6 (índice 5) depende do chest_2
+              else if (missionIndex === 5) { 
                 isPreviousCompleted = user?.chestsOpened?.includes('chest_2') || false;
               }
-              // Se não for a missão 0 ou as missões após baús, depende da missão anterior
+              // Para todas as outras missões (que vêm diretamente da anterior)
               else {
                 const prevMissionId = ORIGINAL_MISSIONS[missionIndex - 1]?.id;
                 isPreviousCompleted = isMissionCompleted(prevMissionId);
@@ -492,8 +507,5 @@ const styles = StyleSheet.create({
     width: '100%', 
     height: '100%',
     resizeMode: 'contain',
-  },
-  bottomSpacer: {
-    height: 100,
-  },
-});
+  }
+})

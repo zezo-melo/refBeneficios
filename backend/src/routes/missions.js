@@ -216,13 +216,16 @@ router.post('/complete-first-mission', authMiddleware, async (req, res) => {
     }
 
     // Verifica se o usuário já tem pontos de perfil preenchido
-    if (user.missions > 0) { 
+    // A lógica original usa 'user.missions > 0', mas para 'profile' é melhor usar o missionCompleted
+    if (user.missionsCompleted && user.missionsCompleted.includes('profile')) { 
         return res.status(400).json({ message: 'Esta missão já foi completada.' });
     }
 
     // Atualizar os pontos e o contador de missões do usuário
     user.points += missionPoints;
     user.missions += 1; // Incrementa o contador de missões completadas
+    user.missionsCompleted = Array.isArray(user.missionsCompleted) ? user.missionsCompleted : [];
+    user.missionsCompleted.push('profile'); // Adiciona o ID da missão de perfil
     await user.save();
 
     res.json({
@@ -236,8 +239,6 @@ router.post('/complete-first-mission', authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
- 
 // Nova rota: completar missão do quiz (Missão 2)
 router.post('/complete-quiz-mission', authMiddleware, async (req, res) => {
   try {
@@ -391,6 +392,59 @@ router.post('/complete-quiz-mission-4', authMiddleware, async (req, res) => {
   }
 });
 
+// 🟢 NOVO: Rota para completar missão de Caça Palavras (Missão 13)
+router.post('/complete-word-search', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const missionId = '13'; // ID da missão 'Caça Palavras da Empresa'
+    const { timeSpent } = req.body || {}; // O frontend envia apenas o tempo gasto
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    // Já completou a missão 13?
+    if (user.missionsCompleted && user.missionsCompleted.includes(missionId)) {
+      return res.status(400).json({ message: 'Esta missão já foi completada.' });
+    }
+
+    const safeTimeSpent = Number.isFinite(timeSpent) ? Math.max(0, Number(timeSpent)) : 0;
+    
+    // Lógica de pontos: 15 pontos base (conforme index.tsx) + bônus por tempo
+    const basePoints = 15; 
+    let timeBonus = 0;
+    
+    // Bônus de tempo: 1 ponto a cada 60 segundos economizado abaixo de 300s (5 minutos)
+    if (safeTimeSpent > 0) {
+      const maxTimeForBonus = 300; // 5 minutos = 300 segundos
+      const timeSaved = maxTimeForBonus - safeTimeSpent;
+      timeBonus = Math.max(0, Math.floor(timeSaved / 60)); // 1 ponto de bônus por minuto rápido
+    }
+    
+    const missionPoints = basePoints + timeBonus;
+
+    // Atualiza o perfil do usuário
+    user.points += missionPoints;
+    user.missionsCompleted = Array.isArray(user.missionsCompleted) ? user.missionsCompleted : [];
+    user.missionsCompleted.push(missionId);
+    await user.save();
+
+    return res.json({
+      message: `Missão ${missionId} (Caça Palavras) concluída! Você ganhou ${missionPoints} pontos.`,
+      user,
+      pointsBreakdown: {
+        basePoints,
+        timeBonus,
+        totalPoints: missionPoints
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao completar missão Caça Palavras:', error);
+    return res.status(500).json({ message: 'Erro do servidor.' });
+  }
+});
+
 // Rota para abrir baú de bônus
 router.post('/open-chest', authMiddleware, async (req, res) => {
   try {
@@ -428,3 +482,5 @@ router.post('/open-chest', authMiddleware, async (req, res) => {
     return res.status(500).json({ message: 'Erro do servidor.' });
   }
 });
+
+module.exports = router;
