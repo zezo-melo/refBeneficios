@@ -9,12 +9,16 @@ export const API_CONFIG = {
   localNetwork: 'http://192.168.1.15:3000/api',
   // Para o seu backend hospedado no Vercel
   vercel: 'https://seu-backend-incrivel.vercel.app/api',
-  // Para usar com tunnel do Expo (funciona em qualquer rede)
+  // Para usar com tunnel do Expo (funciona em qualquer rede )
   tunnel: 'https://seu-backend-incrivel.vercel.app/api',
+  // NOVO: Configuração para o servidor da empresa (acesso via VPN )
+  // O IP 172.170.10.1 é o IP do servidor host.
+  // A porta 8106 é a porta mapeada pelo Docker (8106:3000).
+  server: 'http://172.170.10.1:8106/api',
 };
 
 // Configuração automática baseada na plataforma
-const getApiUrl = () => {
+const getApiUrl = ( ) => {
   // 1) Permite override via variável de ambiente do Expo (app.config, eas, etc)
   // @ts-ignore - process.env pode não estar tipado aqui
   const envUrl = process?.env?.EXPO_PUBLIC_API_URL || process?.env?.API_URL;
@@ -29,7 +33,9 @@ const getApiUrl = () => {
   
   // Para dispositivos físicos, use localNetwork
   if (__DEV__) {
-    return API_CONFIG.localNetwork;
+    // Para testar no servidor da empresa, altere para API_CONFIG.server
+    // return API_CONFIG.localNetwork;
+    return API_CONFIG.server;
   }
   
   // Para produção, use vercel
