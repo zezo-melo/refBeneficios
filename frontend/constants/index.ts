@@ -6,11 +6,13 @@ export const API_CONFIG = {
   emulator: 'http://10.0.2.2:3000/api', 
   // Para testar em um celular na mesma rede local que o seu PC.
   // IMPORTANTE: Substitua '172.17.1.103' pelo IP do seu próprio computador.
-  localNetwork: 'http://192.168.1.15:3000/api',
+  localNetwork: 'https://api-conhecimentos.mentorh.com/api',
   // Para o seu backend hospedado no Vercel
-  vercel: 'https://seu-backend-incrivel.vercel.app/api',
+  // Aqui apontamos para a API em produção já com o prefixo /api,
+  // pois o seu backend monta as rotas como /api/auth, /api/profile, etc.
+  vercel: 'https://api-conhecimentos.mentorh.com/api',
   // Para usar com tunnel do Expo (funciona em qualquer rede)
-  tunnel: 'https://seu-backend-incrivel.vercel.app/api',
+  tunnel: 'https://api-conhecimentos.mentorh.com/api',
 };
 
 // Configuração automática baseada na plataforma
