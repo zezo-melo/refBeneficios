@@ -28,19 +28,13 @@ const getApiUrl = ( ) => {
     return envUrl;
   }
 
-  // Em desenvolvimento no iOS, prefira a rede local (o Expo permite HTTP para LAN)
-  if (__DEV__ && Platform.OS === 'ios') {
-    return API_CONFIG.localNetwork;
-  }
-  
-  // Para dispositivos físicos, use localNetwork
+  // Em desenvolvimento, use sempre a API pública em HTTPS
+  // (independente se é Android/iOS, emulador ou dispositivo físico)
   if (__DEV__) {
-    // Para testar no servidor da empresa, altere para API_CONFIG.server
-    // return API_CONFIG.localNetwork;
-    return API_CONFIG.server;
+    return API_CONFIG.localNetwork; // https://api-conhecimentos.mentorh.com/api
   }
-  
-  // Para produção, use vercel
+
+  // Para produção, use a mesma URL pública (outra opção seria API_CONFIG.vercel)
   return API_CONFIG.vercel;
 };
 
