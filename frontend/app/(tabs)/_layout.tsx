@@ -36,6 +36,7 @@ export default function TabLayout() {
         name="shop"
         options={{
           title: 'Shop',
+          href: null,
           tabBarIcon: ({ color }) => <Ionicons name="cart" size={24} color={color} />,
         }}
       />
