@@ -4,6 +4,7 @@ import React from 'react';
 import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { formatName } from "../utils/formatName";
+import { mapLevel } from "../utils/mapLevel.js";
 
 
 interface DrawerContentProps {
@@ -20,11 +21,11 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
     // Atualizei as rotas para incluir a pasta `(tabs)`
     { icon: 'home', title: 'Missões', screen: '(tabs)' },
     { icon: 'trophy', title: 'Ranking', screen: '(tabs)/rank' },
-    { icon: 'cart', title: 'Shop', screen: '(tabs)/shop' },
+    // { icon: 'cart', title: 'Shop', screen: '(tabs)/shop' },
     { icon: 'person', title: 'Perfil', screen: '(tabs)/profile' },
-    { icon: 'settings', title: 'Configurações', screen: 'settings' },
-    { icon: 'help-circle', title: 'Ajuda', screen: 'help' },
-    { icon: 'information-circle', title: 'Sobre', screen: 'about' },
+    // { icon: 'settings', title: 'Configurações', screen: 'settings' },
+    // { icon: 'help-circle', title: 'Ajuda', screen: 'help' },
+    // { icon: 'information-circle', title: 'Sobre', screen: 'about' },
   ];
 
   const handleNavigation = (screen: string) => {
@@ -63,11 +64,11 @@ export default function DrawerContent({ navigation, state, descriptors }: Drawer
           resizeMode="contain"
         />     
         </View>
-        <Text style={styles.subtitle}>App Benefícios</Text>
+        <Text style={styles.subtitle}>App do Conhecimento</Text>
         {user && (
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{formatName(user?.name)}</Text>
-            <Text style={styles.userLevel}>Nível {user.level} • {user.xp} XP</Text>
+            <Text style={styles.userLevel}>Pontos: {user.points} • Rank: {mapLevel(user.points)}</Text>
           </View>
         )}
       </View>

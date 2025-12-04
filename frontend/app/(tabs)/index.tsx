@@ -53,7 +53,7 @@ const MASCOTE_IMAGES = [
 const MascoteOSM = () => (
   <View style={styles.mascoteContainer}>
     <Ionicons name="sparkles-sharp" size={30} color="#FFD700" />
-    <Text style={styles.mascoteText}>Seu MentoRH</Text>
+    <Text style={styles.mascoteText}>Suporte N1</Text>
   </View>
 );
 

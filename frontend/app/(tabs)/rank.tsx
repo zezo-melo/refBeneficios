@@ -15,6 +15,8 @@ import Header from '../../components/Header';
 import { API_URL } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// 1. Importação da função formatName
+import { formatName } from "../../utils/formatName";
 
 type RankItem = {
   position: number;
@@ -158,7 +160,13 @@ export default function RankScreen() {
                     </View>
                   )}
 
-                  <Text style={styles.podiumName}>{item.name}</Text>
+                  <Text 
+                    style={styles.podiumName}
+                    numberOfLines={1} // Garante no máximo 1 linha
+                    ellipsizeMode='tail' // Adiciona "..." se cortar
+                  >
+                    {formatName(item.name)} {/* <--- Nome formatado e limitado */}
+                  </Text>
                   <Text style={styles.podiumPoints}>{item.points} pts</Text>
                   <Text style={styles.podiumLevel}>{mapLevel(item.points)}</Text>
                 </View>
@@ -178,7 +186,13 @@ export default function RankScreen() {
                 <Image source={{ uri: me.photoUrl }} style={styles.avatarThumb} />
               )}
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>{me.name}</Text>
+                <Text 
+                  style={styles.userName}
+                  numberOfLines={1} 
+                  ellipsizeMode='tail' // <--- Aplicado
+                >
+                  {formatName(me.name)} {/* <--- Nome formatado */}
+                </Text>
                 <Text style={styles.userLevel}>{mapLevel(me.points)}</Text>
               </View>
               <View style={styles.pointsContainer}>
@@ -199,7 +213,13 @@ export default function RankScreen() {
                 <Image source={{ uri: u.photoUrl }} style={styles.avatarThumb} />
               )}
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>{u.name}</Text>
+                <Text 
+                  style={styles.userName}
+                  numberOfLines={1} 
+                  ellipsizeMode='tail' // <--- Aplicado
+                >
+                  {formatName(u.name)} {/* <--- Nome formatado */}
+                </Text>
                 <Text style={styles.userLevel}>{mapLevel(u.points)}</Text>
               </View>
               <View style={styles.pointsContainer}>
@@ -246,7 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 30,
   },
-  podiumItem: { alignItems: 'center', flex: 1 },
+  podiumItem: { alignItems: 'center', flex: 1, paddingHorizontal: 5 }, // Ajustado padding para dar respiro
   positionLabel: {
     fontSize: 14,
     color: '#4a7f37',
@@ -273,7 +293,15 @@ const styles = StyleSheet.create({
   secondPlace: { backgroundColor: '#C0C0C0' },
   thirdPlace: { backgroundColor: '#CD7F32' },
   initial: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
-  podiumName: { fontSize: 16, fontWeight: '600', color: '#292a2b', textAlign: 'center' },
+  podiumName: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#292a2b', 
+    width: '100%', 
+    maxWidth: 100, // Largura restrita para centralizar o texto
+    textAlign: 'center', // <--- CORREÇÃO CRÍTICA AQUI
+    marginBottom: 4, // Adicionado pequeno espaço
+  },
   podiumPoints: { fontSize: 14, color: '#4a7f37', fontWeight: '600' },
   podiumLevel: { fontSize: 12, color: '#666' },
 
@@ -313,7 +341,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   userInfo: { flex: 1 },
-  userName: { fontSize: 16, fontWeight: '500', color: '#292a2b', marginBottom: 4 },
+  userName: { 
+    fontSize: 16, 
+    fontWeight: '500', 
+    color: '#292a2b', 
+    marginBottom: 4, 
+    flexShrink: 1, 
+  },
   userLevel: { fontSize: 12, color: '#666' },
   pointsContainer: { alignItems: 'flex-end' },
   pointsText: { fontSize: 16, fontWeight: 'bold', color: '#4a7f37' },

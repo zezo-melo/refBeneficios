@@ -6,7 +6,6 @@ import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 import { useAuth } from '../contexts/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { formatName } from "../utils/formatName";
-import LogoCarousel from '../components/LogoCarousel'
 
 interface HeaderProps {
   onMenuPress?: () => void;
@@ -101,7 +100,6 @@ export default function Header({ onMenuPress }: HeaderProps) {
         {user && (
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{formatName(user?.name)}</Text>
-            <Text style={styles.userLevel}>Nível {user.level}</Text>
           </View>
         )}
         <TouchableOpacity 
