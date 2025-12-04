@@ -104,7 +104,7 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
             <BackButton />
             <View style={styles.header}>
               <Text style={styles.title}>Atualizar Perfil</Text>
-              <Text style={styles.subtitle}>Altere as suas informações da conta</Text>
+              <Text style={styles.subtitle}>Altere as suas informações</Text>
             </View>
 
             <TouchableOpacity onPress={handleImagePicker} style={styles.profileImageContainer}>

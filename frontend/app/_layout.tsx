@@ -2,6 +2,7 @@
 import { Drawer } from 'expo-router/drawer';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DrawerContent from '../components/DrawerContent';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { SplashScreen } from 'expo-router';
@@ -118,10 +119,12 @@ function AppRoutes() {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
