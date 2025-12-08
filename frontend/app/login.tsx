@@ -220,6 +220,7 @@ logo: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#4a7f37',
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 16,

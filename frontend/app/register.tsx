@@ -1,4 +1,3 @@
-// RegisterScreen.js
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import LogoCarousel from '../components/LogoCarousel'
@@ -7,10 +6,10 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
-  Modal, // Importa o Modal para o seletor de data
+  Modal, 
   Platform,
   SafeAreaView,
-  ScrollView, // Importa o ScrollView
+  ScrollView, 
   StyleSheet,
   Text,
   TextInput,
@@ -19,29 +18,144 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'expo-router';
-// Importa o DateTimePicker (é necessário instalar: expo install @react-native-community/datetimepicker)
-import DateTimePicker from '@react-native-community/datetimepicker';
 
-// Novo componente da tela de registro
+// --- Componente de Indicador de Força de Senha ---
+const PasswordStrengthIndicator = ({ password }) => {
+    const scorePassword = (pass) => {
+        let score = 0;
+        if (!pass) return 0;
+        
+        if (pass.length >= 8) score += 1;
+        if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score += 1;
+        if (/\d/.test(pass)) score += 1;
+        if (/[^a-zA-Z0-9]/.test(pass)) score += 1;
+
+        return score;
+    };
+
+    const score = scorePassword(password);
+    let color = '#ccc';
+    let text = 'Fraca';
+
+    if (score === 1) {
+        color = '#ff4d4f'; // Vermelho
+        text = 'Fraca';
+    } else if (score === 2) {
+        color = '#ffc53d'; // Laranja
+        text = 'Média';
+    } else if (score >= 3) {
+        color = '#52c41a'; // Verde
+        text = 'Forte';
+    }
+    
+    if (password.length === 0) return null;
+
+    return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, marginBottom: 8 }}>
+            <View style={{ height: 5, flex: 1, backgroundColor: '#eee', borderRadius: 5 }}>
+                <View style={{ width: `${score * 25}%`, height: '100%', backgroundColor: color, borderRadius: 5 }} />
+            </View>
+            <Text style={{ marginLeft: 10, fontSize: 12, color: color, fontWeight: 'bold' }}>
+                {text}
+            </Text>
+        </View>
+    );
+};
+// ----------------------------------------------------------
+
+// --- Componente de Requisitos de Senha ---
+const PasswordRequirements = ({ password, confirmPassword }) => {
+    // Requisitos de Força
+    const isMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+
+    const requirements = [
+        { label: 'Pelo menos 8 caracteres', met: isMinLength },
+        { label: 'Uma letra maiúscula', met: hasUpperCase },
+        { label: 'Um caractere especial', met: hasSpecialChar },
+    ];
+
+    // Requisito de Igualdade
+    const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+    const showMatchRequirement = confirmPassword.length > 0;
+
+    return (
+        <View style={styles.requirementsContainer}>
+            <Text style={styles.requirementsTitle}>Requisitos de senha:</Text>
+            
+            {/* Requisitos de Força */}
+            {requirements.map((req, index) => (
+                <View key={index} style={styles.requirementItem}>
+                    <Ionicons 
+                        name={req.met ? 'checkmark-circle' : 'ellipse-outline'}
+                        size={16}
+                        color={req.met ? '#52c41a' : '#aaa'}
+                        style={{ marginRight: 8 }}
+                    />
+                    <Text style={[styles.requirementText, req.met ? styles.requirementMet : styles.requirementPending]}>
+                        {req.label}
+                    </Text>
+                </View>
+            ))}
+
+            {/* Requisito de Senhas Coincidentes (Posicionamento Consolidado) */}
+            {showMatchRequirement && (
+                <View style={styles.requirementItem}>
+                    <Ionicons
+                        name={passwordsMatch ? 'checkmark-circle' : 'close-circle'}
+                        size={16}
+                        color={passwordsMatch ? '#52c41a' : '#ff4d4f'}
+                        style={{ marginRight: 8 }}
+                    />
+                    <Text style={[
+                        styles.requirementText, 
+                        { fontWeight: 'bold' },
+                        passwordsMatch ? styles.requirementMet : styles.requirementError
+                    ]}>
+                        {passwordsMatch ? 'As senhas coincidem!' : 'As senhas não coincidem.'}
+                    </Text>
+                </View>
+            )}
+        </View>
+    );
+};
+// ----------------------------------------------------
+
+
+// Componente da tela de registro
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [dob, setDob] = useState(new Date()); // Estado para a data de nascimento (tipo Date)
-  const [dobDisplay, setDobDisplay] = useState(''); // Estado para exibir a data formatada
+  const [dobDisplay, setDobDisplay] = useState(''); 
   const [docType, setDocType] = useState('cpf');
   const [document, setDocument] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para controlar a visibilidade do seletor de data
-  // Atualizado para pegar a função 'signUp' em vez de 'register'
+
   const { signUp, isLoading } = useAuth();
   const router = useRouter();
+  
+  // Funções de formatação
+  const formatDob = (text) => {
+    let cleaned = text.replace(/\D/g, ''); 
+    let formatted = '';
 
-  // Função para aplicar a máscara no CPF ou CNPJ
+    if (cleaned.length > 0) formatted += cleaned.substring(0, 2);
+    if (cleaned.length >= 3) formatted += '/' + cleaned.substring(2, 4);
+    if (cleaned.length >= 5) formatted += '/' + cleaned.substring(4, 8);
+
+    if (formatted.length > 10) {
+      formatted = formatted.substring(0, 10);
+    }
+    
+    setDobDisplay(formatted);
+  };
+
   const formatDocument = (text) => {
-    let formattedText = text.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+    let formattedText = text.replace(/\D/g, '');
     if (docType === 'cpf') {
       if (formattedText.length > 9) {
         formattedText = formattedText.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -50,7 +164,7 @@ export default function RegisterScreen() {
       } else if (formattedText.length > 3) {
         formattedText = formattedText.replace(/(\d{3})(\d{3})/, '$1.$2');
       }
-      formattedText = formattedText.substring(0, 14); // Limita o tamanho máximo
+      formattedText = formattedText.substring(0, 14);
     } else { // docType === 'cnpj'
       if (formattedText.length > 12) {
         formattedText = formattedText.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
@@ -61,38 +175,51 @@ export default function RegisterScreen() {
       } else if (formattedText.length > 2) {
         formattedText = formattedText.replace(/(\d{2})(\d{3})/, '$1.$2');
       }
-      formattedText = formattedText.substring(0, 18); // Limita o tamanho máximo
+      formattedText = formattedText.substring(0, 18);
     }
     setDocument(formattedText);
   };
 
-  // Função para lidar com a mudança de data no seletor
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios'); // Fecha o seletor no Android, mas no iOS pode precisar de um botão de 'ok'
-    if (selectedDate) {
-      setDob(selectedDate);
-      // Formata a data para exibição
-      const formattedDate = `${selectedDate.getDate().toString().padStart(2, '0')}/${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}/${selectedDate.getFullYear()}`;
-      setDobDisplay(formattedDate);
-    }
-  };
-
+  // Função de registro
   const handleRegister = async () => {
-    if (!name || !email || !dob || !document || !phone || !password || !confirmPassword) {
+    // Validação de campos obrigatórios
+    if (!name || !email || !dobDisplay || !document || !phone || !password || !confirmPassword) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
 
+    // Validação de Data
+    const dateParts = dobDisplay.split('/');
+    if (dateParts.length !== 3 || dateParts[0].length !== 2 || dateParts[1].length !== 2 || dateParts[2].length !== 4) {
+        Alert.alert('Erro', 'Formato de Data de Nascimento inválido. Use DD/MM/AAAA.');
+        return;
+    }
+    const dobDate = new Date(`${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`);
+    if (isNaN(dobDate.getTime())) {
+        Alert.alert('Erro', 'Data de Nascimento inválida.');
+        return;
+    }
+
+    // Validação de Força de Senha
+    const isMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+
+    if (!isMinLength || !hasUpperCase || !hasSpecialChar) {
+        Alert.alert('Erro', 'A senha não atende a todos os requisitos mínimos (8 caracteres, letra maiúscula, caractere especial).');
+        return;
+    }
+    
+    // Validação de Igualdade de Senhas
     if (password !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não coincidem. Por favor, verifique e tente novamente.');
       return;
     }
 
-    // Cria um objeto com todos os dados do formulário
     const registrationData = {
       name,
       email,
-      dob,
+      dob: dobDate,
       docType,
       document,
       phone,
@@ -100,9 +227,7 @@ export default function RegisterScreen() {
     };
 
     try {
-      // Chama a função 'signUp' do contexto com o objeto de dados
       await signUp(registrationData);
-      // O contexto já cuida da navegação em um cenário real
     } catch (error) {
       Alert.alert('Erro', error.message);
     }
@@ -116,29 +241,29 @@ export default function RegisterScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-            {/* Logo e Título */}
+            {/* Header */}
             <View style={styles.header}>
               <View style={styles.header}>
-                          <Image
-                            source={require('../assets/images/osm-logo.png')}
-                            style={styles.logoOsm}
-                            resizeMode="contain"
-                          />
-                        </View>
+                  <Image
+                    source={require('../assets/images/osm-logo.png')}
+                    style={styles.logoOsm}
+                    resizeMode="contain"
+                  />
+                </View>
               <Text style={styles.title}>Crie sua conta</Text>
               <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
             </View>
 
             {/* Formulário */}
             <View style={styles.form}>
-              {/* Campo Nome */}
+              {/* Campo Nome (Acentos permitidos, Placeholder ajustado) */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="person" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Nome completo"
+                  placeholder="Nome completo" 
                   placeholderTextColor="#fff"
                   value={name}
                   onChangeText={setName}
@@ -147,7 +272,6 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              {/* Campo Email */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="mail" size={20} color="#fff" />
@@ -165,37 +289,28 @@ export default function RegisterScreen() {
                 />
               </View>
 
-              {/* Campo Data de Nascimento com Seletor */}
-              <TouchableOpacity onPress={() => setShowDatePicker(true)} disabled={isLoading}>
-                <View style={styles.inputContainer}>
-                  <View style={styles.inputIcon}>
-                    <Ionicons name="calendar" size={20} color="#fff" />
-                  </View>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Data de Nascimento (DD/MM/AAAA)"
-                    placeholderTextColor="#fff"
-                    value={dobDisplay}
-                    editable={false} // Impede que o usuário digite no campo
-                  />
+              <View style={styles.inputContainer}>
+                <View style={styles.inputIcon}>
+                  <Ionicons name="calendar" size={20} color="#fff" />
                 </View>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={dob}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Data de Nascimento (DD/MM/AAAA)"
+                  placeholderTextColor="#fff"
+                  value={dobDisplay}
+                  onChangeText={formatDob} 
+                  keyboardType="numeric" 
+                  maxLength={10} 
+                  editable={!isLoading}
                 />
-              )}
-
-              {/* Radio CPF/CNPJ e Campo Documento */}
+              </View>
+             
               <View style={styles.radioGroup}>
                 <TouchableOpacity
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cpf');
-                    setDocument(''); // Limpa o campo ao mudar o tipo
+                    setDocument(''); 
                   }}
                 >
                   <Ionicons
@@ -209,7 +324,7 @@ export default function RegisterScreen() {
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cnpj');
-                    setDocument(''); // Limpa o campo ao mudar o tipo
+                    setDocument(''); 
                   }}
                 >
                   <Ionicons
@@ -229,13 +344,12 @@ export default function RegisterScreen() {
                   placeholder={docType === 'cpf' ? 'Digite seu CPF' : 'Digite seu CNPJ'}
                   placeholderTextColor="#fff"
                   value={document}
-                  onChangeText={formatDocument} // Usa a nova função de formatação
+                  onChangeText={formatDocument} 
                   keyboardType="numeric"
                   editable={!isLoading}
                 />
               </View>
 
-              {/* Campo Telefone */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="call" size={20} color="#fff" />
@@ -250,6 +364,7 @@ export default function RegisterScreen() {
                   editable={!isLoading}
                 />
               </View>
+              {/* Fim dos campos básicos */}
 
               {/* Campo Senha */}
               <View style={styles.inputContainer}>
@@ -278,6 +393,7 @@ export default function RegisterScreen() {
                   />
                 </TouchableOpacity>
               </View>
+              
 
               {/* Campo Confirmar Senha */}
               <View style={styles.inputContainer}>
@@ -307,6 +423,15 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
               </View>
 
+              {/* Indicador de Força */}
+              <PasswordStrengthIndicator password={password} /> 
+
+              {/* Requisitos de Senha e Conferência de Igualdade */}
+              <PasswordRequirements 
+                password={password} 
+                confirmPassword={confirmPassword} 
+              />
+              
               {/* Botão de Cadastro */}
               <TouchableOpacity
                 style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
@@ -359,15 +484,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'space-between',
+    paddingBottom: 50,
   },
   header: {
     alignItems: 'center',
-  },
-  logoContainer: {
-  },
-  logo: {
-    width: 120,
-    height: 60,
   },
   title: {
     fontSize: 28,
@@ -419,7 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 20,
-    color: '#fff',
+    color: '#4a7f37',
     
   },
   radioText: {
@@ -465,20 +585,38 @@ const styles = StyleSheet.create({
     color: '#4a7f37',
     fontWeight: 'bold',
   },
-
-  footerText: {
-    color: '#4a7f37',
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  linkText: {
-    color: '#4a7f37',
-    fontWeight: '500',
-  },
   logoOsm: {
     width: 250,
     height: 80,
     marginLeft: -40,
   },
+  // STYLES DE SENHA
+  requirementsContainer: {
+    marginTop: 8,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  requirementsTitle: {
+    fontSize: 14,
+    color: '#4a7f37',
+    marginBottom: 4,
+    fontWeight: 'bold',
+  },
+  requirementItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  requirementText: {
+    fontSize: 14,
+  },
+  requirementMet: {
+    color: '#52c41a', // Verde
+  },
+  requirementPending: {
+    color: '#aaa', // Cinza
+  },
+  requirementError: {
+    color: '#ff4d4f', // Vermelho para erro de não coincidência
+  }
 });
