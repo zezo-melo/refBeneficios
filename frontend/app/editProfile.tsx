@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -24,27 +24,97 @@ export default function UpdateProfileScreen() {
   const { user, updateProfile, isLoading } = useAuth();
   const router = useRouter();
 
-  const [name, setName] = useState(user?.profile?.name || user?.name || '');
-  const [phone, setPhone] = useState(user?.profile?.phone || user?.phone || '');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
-const [photoUrl, setPhotoUrl] = useState<string | null>(
-  user?.profile?.photoUrl && user.profile.photoUrl.trim() !== '' 
-    ? String(user.profile.photoUrl) 
-    : user?.photoUrl && user.photoUrl.trim() !== '' 
-      ? String(user.photoUrl) 
-      : null
-);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
-  const [address, setAddress] = useState((user?.profile?.address as string) || '');
-  const [city, setCity] = useState((user?.profile?.city as string) || '');
-  const [state, setState] = useState((user?.profile?.state as string) || '');
-  const [zipCode, setZipCode] = useState((user?.profile?.zipCode as string) || '');
-  const [bio, setBio] = useState((user?.profile?.bio as string) || '');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [bio, setBio] = useState('');
+
+  // Função helper para garantir que a saída é uma string limpa
+  const extractProfileField = (field: any): string => {
+    if (field === null || field === undefined) return '';
+    
+    let result = '';
+    if (typeof field === "string") {
+      result = field;
+    } else if (typeof field === "object") {
+      result = field.value || field.bio || field.address || field.name || '';
+    } else {
+      result = String(field);
+    }
+
+    const lowerTrimmed = result.trim().toLowerCase();
+    if (lowerTrimmed === 'object' || lowerTrimmed === 'null' || lowerTrimmed === 'undefined') {
+      return '';
+    }
+    return result.trim();
+  };
+
+  useEffect(() => {
+    if (!user) return;
+
+    const profile = user.profile || {};
+    
+    // 1. CARREGAMENTO DE DADOS DE NÍVEL SUPERIOR
+    setName(extractProfileField(profile.name || user.name));
+    setPhone(extractProfileField(profile.phone || user.phone));
+
+    setPhotoUrl(
+      profile.photoUrl?.trim()
+        ? profile.photoUrl
+        : user.photoUrl?.trim()
+        ? user.photoUrl
+        : null
+    );
+
+    // 2. CARREGAMENTO DE DADOS DE ENDEREÇO
+    // addressObject é o objeto aninhado que contém street, city, state, etc.
+    const addressObject = user.address && typeof user.address === 'object' 
+        ? user.address 
+        : profile.address && typeof profile.address === 'object' 
+        ? profile.address 
+        : {}; 
+
+    // ✅ CORREÇÃO CHAVES MOONGOSE: Acessa as chaves aninhadas definidas no seu Model.
+    // Inclui tentativas de chaves comuns para o Endereço (rua/logradouro).
+    setAddress(extractProfileField(
+        addressObject.street ||          // Chave do seu schema
+        addressObject.logradouro ||      // Tentativa 2 (Comum no Brasil)
+        addressObject.rua ||             // Tentativa 3 (Comum no Brasil)
+        addressObject.endereco ||        // Tentativa 4
+        addressObject.line1              // Tentativa 5
+    )); 
+    
+    // As chaves abaixo usam o padrão do seu schema (city, state, zipCode)
+    setCity(extractProfileField(addressObject.city));
+    setState(extractProfileField(addressObject.state));
+    setZipCode(extractProfileField(addressObject.zipCode));
+
+    // Bio
+    setBio(extractProfileField(user.bio || profile.bio));
+    
+    // 💡 LOG DE VERIFICAÇÃO FINAL: Verifique o console para ver o valor de 'street'
+    console.log("Valores carregados (street/city/state): ", { 
+        name: extractProfileField(user.name),
+        phone: extractProfileField(user.phone), 
+        street: extractProfileField(addressObject.street), 
+        logradouro: extractProfileField(addressObject.logradouro),
+        rua: extractProfileField(addressObject.rua),            
+        city: extractProfileField(addressObject.city),     
+        bio: extractProfileField(user.bio) 
+    }); 
+
+  }, [user]);
 
   const handleImagePicker = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos de permissão para acessar a sua galeria.');
+      Alert.alert('Permissão necessária', 'Precisamos de permissão para acessar a galeria.');
       return;
     }
 
@@ -62,39 +132,42 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
 
   const handleUpdate = async () => {
     if (!name || !phone) {
-      Alert.alert('Erro', 'Por favor, preencha o nome e o telefone.');
+      Alert.alert('Erro', 'Preencha nome e telefone.');
       return;
     }
-
+    
+    // 3. ENVIO DE DADOS (Envia o endereço como objeto aninhado, conforme Model)
     const updatedData = {
       name,
       phone,
       photoUrl,
-      address,
-      city,
-      state,
-      zipCode,
       bio,
+      address: {
+          street: address, // Envia o valor do campo "Endereço" para a chave 'street'
+          city: city,
+          state: state,
+          zipCode: zipCode,
+      }
     };
 
     try {
-      await updateProfile(updatedData);
-      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+      await updateProfile(updatedData); 
+      Alert.alert('Sucesso', 'Perfil atualizado');
       router.replace('/profile');
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Falha ao atualizar o perfil. Tente novamente.');
+      Alert.alert('Erro', error.message || 'Falha ao atualizar.');
     }
   };
 
-  const getInitial = (userName?: string) => {
-    return userName ? userName.charAt(0).toUpperCase() : '';
-  };
+  const getInitial = (userName?: string) =>
+    userName ? userName.charAt(0).toUpperCase() : '';
 
   const hasValidPhoto = !!photoUrl && photoUrl.trim() !== '';
 
   return (
     <SafeAreaView style={styles.container}>
       <Header />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -102,9 +175,10 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
             <BackButton />
+
             <View style={styles.header}>
               <Text style={styles.title}>Atualizar Perfil</Text>
-              <Text style={styles.subtitle}>Altere as suas informações</Text>
+              <Text style={styles.subtitle}>Altere suas informações</Text>
             </View>
 
             <TouchableOpacity onPress={handleImagePicker} style={styles.profileImageContainer}>
@@ -121,34 +195,33 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
             </TouchableOpacity>
 
             <View style={styles.form}>
+              {/* Nome */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="person" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder={user?.name}
+                  placeholder="Nome completo"
                   placeholderTextColor="#999"
                   value={name}
                   onChangeText={setName}
-                  autoCapitalize="words"
-                  editable={!isLoading}
                 />
               </View>
 
+              {/* Email (readonly) */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="mail" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
-                  placeholder="Email"
-                  placeholderTextColor="#999"
                   value={user?.email || ''}
                   editable={false}
                 />
               </View>
 
+              {/* Telefone */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="call" size={20} color="#4a7f37" />
@@ -160,24 +233,24 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
                   value={phone}
                   onChangeText={setPhone}
                   keyboardType="phone-pad"
-                  editable={!isLoading}
                 />
               </View>
 
+              {/* Endereço (Rua/Logradouro) */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="location" size={20} color="#4a7f37" />
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Endereço"
+                  placeholder="Endereço (Rua, Av.)"
                   placeholderTextColor="#999"
-                  value={address}
+                  value={address} 
                   onChangeText={setAddress}
-                  editable={!isLoading}
                 />
               </View>
 
+              {/* Cidade */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="location" size={20} color="#4a7f37" />
@@ -188,10 +261,10 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
                   placeholderTextColor="#999"
                   value={city}
                   onChangeText={setCity}
-                  editable={!isLoading}
                 />
               </View>
 
+              {/* Estado */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="map" size={20} color="#4a7f37" />
@@ -202,10 +275,10 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
                   placeholderTextColor="#999"
                   value={state}
                   onChangeText={setState}
-                  editable={!isLoading}
                 />
               </View>
 
+              {/* CEP */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="location" size={20} color="#4a7f37" />
@@ -215,12 +288,12 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
                   placeholder="CEP"
                   placeholderTextColor="#999"
                   value={zipCode}
-                  onChangeText={setZipCode}
                   keyboardType="numeric"
-                  editable={!isLoading}
+                  onChangeText={setZipCode}
                 />
               </View>
 
+              {/* BIO */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="book" size={20} color="#4a7f37" />
@@ -233,14 +306,12 @@ const [photoUrl, setPhotoUrl] = useState<string | null>(
                   onChangeText={setBio}
                   multiline
                   numberOfLines={4}
-                  editable={!isLoading}
                 />
               </View>
 
               <TouchableOpacity
                 style={[styles.updateButton, isLoading && styles.updateButtonDisabled]}
                 onPress={handleUpdate}
-                activeOpacity={0.8}
                 disabled={isLoading}
               >
                 {isLoading ? (

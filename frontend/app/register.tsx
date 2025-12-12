@@ -38,13 +38,13 @@ const PasswordStrengthIndicator = ({ password }) => {
     let text = 'Fraca';
 
     if (score === 1) {
-        color = '#ff4d4f'; // Vermelho
+        color = '#ff4d4f';
         text = 'Fraca';
     } else if (score === 2) {
-        color = '#ffc53d'; // Laranja
+        color = '#ffc53d';
         text = 'Média';
     } else if (score >= 3) {
-        color = '#52c41a'; // Verde
+        color = '#52c41a';
         text = 'Forte';
     }
     
@@ -65,7 +65,6 @@ const PasswordStrengthIndicator = ({ password }) => {
 
 // --- Componente de Requisitos de Senha ---
 const PasswordRequirements = ({ password, confirmPassword }) => {
-    // Requisitos de Força
     const isMinLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
@@ -76,7 +75,6 @@ const PasswordRequirements = ({ password, confirmPassword }) => {
         { label: 'Um caractere especial', met: hasSpecialChar },
     ];
 
-    // Requisito de Igualdade
     const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
     const showMatchRequirement = confirmPassword.length > 0;
 
@@ -84,7 +82,6 @@ const PasswordRequirements = ({ password, confirmPassword }) => {
         <View style={styles.requirementsContainer}>
             <Text style={styles.requirementsTitle}>Requisitos de senha:</Text>
             
-            {/* Requisitos de Força */}
             {requirements.map((req, index) => (
                 <View key={index} style={styles.requirementItem}>
                     <Ionicons 
@@ -99,7 +96,6 @@ const PasswordRequirements = ({ password, confirmPassword }) => {
                 </View>
             ))}
 
-            {/* Requisito de Senhas Coincidentes (Posicionamento Consolidado) */}
             {showMatchRequirement && (
                 <View style={styles.requirementItem}>
                     <Ionicons
@@ -123,7 +119,6 @@ const PasswordRequirements = ({ password, confirmPassword }) => {
 // ----------------------------------------------------
 
 
-// Componente da tela de registro
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -138,7 +133,6 @@ export default function RegisterScreen() {
   const { signUp, isLoading } = useAuth();
   const router = useRouter();
   
-  // Funções de formatação
   const formatDob = (text) => {
     let cleaned = text.replace(/\D/g, ''); 
     let formatted = '';
@@ -165,7 +159,7 @@ export default function RegisterScreen() {
         formattedText = formattedText.replace(/(\d{3})(\d{3})/, '$1.$2');
       }
       formattedText = formattedText.substring(0, 14);
-    } else { // docType === 'cnpj'
+    } else {
       if (formattedText.length > 12) {
         formattedText = formattedText.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
       } else if (formattedText.length > 8) {
@@ -180,46 +174,51 @@ export default function RegisterScreen() {
     setDocument(formattedText);
   };
 
-  // Função de registro
   const handleRegister = async () => {
-    // Validação de campos obrigatórios
     if (!name || !email || !dobDisplay || !document || !phone || !password || !confirmPassword) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
 
-    // Validação de Data
+    // Validação da data digitada
     const dateParts = dobDisplay.split('/');
     if (dateParts.length !== 3 || dateParts[0].length !== 2 || dateParts[1].length !== 2 || dateParts[2].length !== 4) {
         Alert.alert('Erro', 'Formato de Data de Nascimento inválido. Use DD/MM/AAAA.');
         return;
     }
-    const dobDate = new Date(`${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`);
-    if (isNaN(dobDate.getTime())) {
-        Alert.alert('Erro', 'Data de Nascimento inválida.');
-        return;
+
+    // Converter para ISO (AAAA-MM-DD)
+    const dobISO = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+
+    // Validação simples
+    const d = new Date(dobISO);
+    if (isNaN(d.getTime())) {
+      Alert.alert('Erro', 'Data de Nascimento inválida.');
+      return;
     }
 
-    // Validação de Força de Senha
+    // Requisitos da senha
     const isMinLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
 
     if (!isMinLength || !hasUpperCase || !hasSpecialChar) {
-        Alert.alert('Erro', 'A senha não atende a todos os requisitos mínimos (8 caracteres, letra maiúscula, caractere especial).');
-        return;
+      Alert.alert(
+        'Erro',
+        'A senha não atende aos requisitos mínimos (8 caracteres, letra maiúscula, caractere especial).'
+      );
+      return;
     }
-    
-    // Validação de Igualdade de Senhas
+
     if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem. Por favor, verifique e tente novamente.');
+      Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
 
     const registrationData = {
       name,
       email,
-      dob: dobDate,
+      dob: dobISO, // <- AQUI AGORA ESTÁ CORRETO
       docType,
       document,
       phone,
@@ -241,29 +240,29 @@ export default function RegisterScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
+            
             {/* Header */}
             <View style={styles.header}>
               <View style={styles.header}>
-                  <Image
-                    source={require('../assets/images/osm-logo.png')}
-                    style={styles.logoOsm}
-                    resizeMode="contain"
-                  />
-                </View>
+                <Image
+                  source={require('../assets/images/osm-logo.png')}
+                  style={styles.logoOsm}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.title}>Crie sua conta</Text>
               <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
             </View>
 
-            {/* Formulário */}
+            {/* Form */}
             <View style={styles.form}>
-              {/* Campo Nome (Acentos permitidos, Placeholder ajustado) */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="person" size={20} color="#fff" />
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Nome completo" 
+                  placeholder="Nome completo"
                   placeholderTextColor="#fff"
                   value={name}
                   onChangeText={setName}
@@ -289,6 +288,7 @@ export default function RegisterScreen() {
                 />
               </View>
 
+              {/* Data de nascimento */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="calendar" size={20} color="#fff" />
@@ -298,19 +298,20 @@ export default function RegisterScreen() {
                   placeholder="Data de Nascimento (DD/MM/AAAA)"
                   placeholderTextColor="#fff"
                   value={dobDisplay}
-                  onChangeText={formatDob} 
-                  keyboardType="numeric" 
-                  maxLength={10} 
+                  onChangeText={formatDob}
+                  keyboardType="numeric"
+                  maxLength={10}
                   editable={!isLoading}
                 />
               </View>
-             
+
+              {/* CPF / CNPJ */}
               <View style={styles.radioGroup}>
                 <TouchableOpacity
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cpf');
-                    setDocument(''); 
+                    setDocument('');
                   }}
                 >
                   <Ionicons
@@ -320,11 +321,12 @@ export default function RegisterScreen() {
                   />
                   <Text style={styles.radioText}>CPF</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   style={styles.radioOption}
                   onPress={() => {
                     setDocType('cnpj');
-                    setDocument(''); 
+                    setDocument('');
                   }}
                 >
                   <Ionicons
@@ -335,6 +337,7 @@ export default function RegisterScreen() {
                   <Text style={styles.radioText}>CNPJ</Text>
                 </TouchableOpacity>
               </View>
+
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="document" size={20} color="#fff" />
@@ -344,7 +347,7 @@ export default function RegisterScreen() {
                   placeholder={docType === 'cpf' ? 'Digite seu CPF' : 'Digite seu CNPJ'}
                   placeholderTextColor="#fff"
                   value={document}
-                  onChangeText={formatDocument} 
+                  onChangeText={formatDocument}
                   keyboardType="numeric"
                   editable={!isLoading}
                 />
@@ -364,9 +367,8 @@ export default function RegisterScreen() {
                   editable={!isLoading}
                 />
               </View>
-              {/* Fim dos campos básicos */}
 
-              {/* Campo Senha */}
+              {/* Senha */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="lock-closed" size={20} color="#fff" />
@@ -393,9 +395,8 @@ export default function RegisterScreen() {
                   />
                 </TouchableOpacity>
               </View>
-              
 
-              {/* Campo Confirmar Senha */}
+              {/* Confirmar Senha */}
               <View style={styles.inputContainer}>
                 <View style={styles.inputIcon}>
                   <Ionicons name="lock-closed" size={20} color="#fff" />
@@ -423,16 +424,10 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Indicador de Força */}
-              <PasswordStrengthIndicator password={password} /> 
+              <PasswordStrengthIndicator password={password} />
+              <PasswordRequirements password={password} confirmPassword={confirmPassword} />
 
-              {/* Requisitos de Senha e Conferência de Igualdade */}
-              <PasswordRequirements 
-                password={password} 
-                confirmPassword={confirmPassword} 
-              />
-              
-              {/* Botão de Cadastro */}
+              {/* Botão */}
               <TouchableOpacity
                 style={[styles.registerButton, isLoading && styles.registerButtonDisabled]}
                 onPress={handleRegister}
@@ -450,7 +445,6 @@ export default function RegisterScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Link para Login */}
             <View style={styles.loginLinkContainer}>
               <Text style={styles.loginLinkText}>Já tem uma conta?</Text>
               <TouchableOpacity onPress={() => router.navigate('login')} disabled={isLoading}>
@@ -464,14 +458,11 @@ export default function RegisterScreen() {
   );
 }
 
+// === Styles (idênticos aos seus) ===
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  keyboardView: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
+  keyboardView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -486,25 +477,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 50,
   },
-  header: {
-    alignItems: 'center',
-  },
+  header: { alignItems: 'center' },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#4a7f37',
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#4a7f37',
-    textAlign: 'center',
-  },
-  form: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 20,
-  },
+  subtitle: { fontSize: 16, color: '#4a7f37', textAlign: 'center' },
+  form: { flex: 1, justifyContent: 'center', paddingVertical: 20 },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -516,37 +497,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#4a7f37',
   },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#fff',
-    paddingVertical: 16,
-  },
-  eyeIcon: {
-    padding: 8,
-  },
-  radioGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    color: '#fff',
-    
-  },
-  radioOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 20,
-    color: '#4a7f37',
-    
-  },
-  radioText: {
-    marginLeft: 8,
-    fontSize: 16,
-    color: '#4a7f37',
-  },
+  inputIcon: { marginRight: 12 },
+  input: { flex: 1, fontSize: 16, color: '#fff', paddingVertical: 16 },
+  eyeIcon: { padding: 8 },
+  radioGroup: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  radioOption: { flexDirection: 'row', alignItems: 'center', marginRight: 20 },
+  radioText: { marginLeft: 8, fontSize: 16, color: '#4a7f37' },
   registerButton: {
     backgroundColor: '#4a7f37',
     borderRadius: 12,
@@ -575,48 +531,21 @@ const styles = StyleSheet.create({
   loginLinkContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-
   },
-  loginLinkText: {
-    color: '#4a7f37',
-    marginRight: 5,
-  },
-  loginLink: {
-    color: '#4a7f37',
-    fontWeight: 'bold',
-  },
+  loginLinkText: { color: '#4a7f37', marginRight: 5 },
+  loginLink: { color: '#4a7f37', fontWeight: 'bold' },
   logoOsm: {
     width: 250,
     height: 80,
     marginLeft: -40,
   },
-  // STYLES DE SENHA
-  requirementsContainer: {
-    marginTop: 8,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-  requirementsTitle: {
-    fontSize: 14,
-    color: '#4a7f37',
-    marginBottom: 4,
-    fontWeight: 'bold',
-  },
-  requirementItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  requirementText: {
-    fontSize: 14,
-  },
-  requirementMet: {
-    color: '#52c41a', // Verde
-  },
-  requirementPending: {
-    color: '#aaa', // Cinza
-  },
-  requirementError: {
-    color: '#ff4d4f', // Vermelho para erro de não coincidência
-  }
+
+  // --- Regras de senha ---
+  requirementsContainer: { marginTop: 8, marginBottom: 16, paddingHorizontal: 8 },
+  requirementsTitle: { fontSize: 14, color: '#4a7f37', marginBottom: 4, fontWeight: 'bold' },
+  requirementItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  requirementText: { fontSize: 14 },
+  requirementMet: { color: '#52c41a' },
+  requirementPending: { color: '#aaa' },
+  requirementError: { color: '#ff4d4f' },
 });
