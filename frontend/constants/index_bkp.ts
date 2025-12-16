@@ -3,7 +3,6 @@ import { Platform } from 'react-native';
 // Objeto de configuração para URLs da API
 export const API_CONFIG = {
   // A URL base da sua API sem o caminho de rota
-  // ESTE ENDEREÇO É EXCLUSIVO PARA O EMULADOR ANDROID ACESSAR SEU COMPUTADOR LOCAL
   emulator: 'http://10.0.2.2:3000/api', 
   // Para testar em um celular na mesma rede local que o seu PC.
   // IMPORTANTE: Substitua '172.17.1.103' pelo IP do seu próprio computador.
@@ -29,18 +28,11 @@ const getApiUrl = ( ) => {
     return envUrl;
   }
 
-  // >>>>>> LÓGICA ATUALIZADA AQUI <<<<<<
+  // Em desenvolvimento, use sempre a API pública em HTTPS
+  // (independente se é Android/iOS, emulador ou dispositivo físico)
   if (__DEV__) {
-    // Se for Android (Emulador), usa o IP especial (10.0.2.2) para o backend local.
-    if (Platform.OS === 'android') {
-      return API_CONFIG.emulator;
-    }
-    
-    // Para iOS ou outras plataformas em desenvolvimento, mantém a URL pública 
-    // ou use 'http://localhost:3000/api' se o seu backend local não usar HTTPS.
-    return API_CONFIG.localNetwork;
+    return API_CONFIG.localNetwork; // https://api-conhecimentos.mentorh.com/api
   }
-  // >>>>>> FIM DA LÓGICA ATUALIZADA <<<<<<
 
   // Para produção, use a mesma URL pública (outra opção seria API_CONFIG.vercel)
   return API_CONFIG.vercel;

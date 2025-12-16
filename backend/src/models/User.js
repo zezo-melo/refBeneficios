@@ -32,6 +32,27 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Informações adicionais de perfil/carreira usadas no currículo
+  role: {
+    type: String,
+    default: 'Colaborador',
+  },
+  medal: {
+    type: String,
+    default: 'Bronze',
+  },
+  productivityTodayPts: {
+    type: Number,
+    default: 0,
+  },
+  productivity30dAvg: {
+    type: Number,
+    default: 0,
+  },
+  activeCalls: {
+    type: Number,
+    default: 0,
+  },
   points: {
     type: Number,
     default: 0 // Inicia com 0 pontos por padrão

@@ -17,6 +17,13 @@ const MENU_OPTIONS = [
     route: '/editProfile', 
     onPress: () => router.push('/editProfile') 
   },
+  { 
+    id: '1a', 
+    title: 'Ver meu currículo', 
+    icon: '📄', 
+    route: '/ProfileCurriculumScreen', 
+    onPress: () => router.push('/ProfileCurriculumScreen') 
+  },
   { id: '2', title: 'Indicadores', icon: '📊', action: 'indicadores' },
   { id: '3', title: 'Configurações', icon: '⚙️', action: 'settings' },
   { id: '4', title: 'Notificações', icon: '🔔', action: 'notifications' },

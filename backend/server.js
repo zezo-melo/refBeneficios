@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+// const curriculumRoutes = require('./src/controllers/CurriculumController.js'); // REMOVIDO
 
 dotenv.config();
 
@@ -24,14 +25,18 @@ mongoose.connect(mongoUri)
 // Importa as rotas de autenticação, perfil e missões
 const authRoutes = require('./src/routes/auth.js');
 const profileRoutes = require('./src/routes/profile.js'); 
-const missionsRoutes = require('./src/routes/missions.js'); // Importe a nova rota
+const missionsRoutes = require('./src/routes/missions.js'); 
 const leaderboardRoutes = require('./src/routes/leaderboard.js');
+// NOVO: Importação CORRETA do arquivo de rotas (routes)
+const curriculumRoutes = require('./src/routes/curriculumRoutes.js'); 
 
 // Adiciona as rotas ao seu aplicativo
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/missions', missionsRoutes); // Adicione esta linha crucial aqui
+app.use('/api/missions', missionsRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+// NOVO: Mapeamento da rota do currículo: O endpoint final será /api/users/curriculum/me
+app.use('/api/users', curriculumRoutes); 
 
 app.get('/', (req, res) => {
   res.send('Servidor de autenticação funcionando!');

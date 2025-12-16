@@ -58,10 +58,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Ionicons name="person" size={24} color={color} />,
         }}
       />
-      
+
       {/* Essas telas não aparecerão mais na barra de navegação.
           Use 'href: null' para escondê-las, mas mantê-las na estrutura de navegação.
       */}
+      <Tabs.Screen
+        name="ProfileCurriculumScreen"
+        options={{
+          title: 'ProfileCurriculum',
+          href: null,
+        }}
+      />
       <Tabs.Screen
         name="descontos"
         options={{
