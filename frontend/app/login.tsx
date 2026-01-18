@@ -33,7 +33,7 @@ export default function LoginScreen() {
     }
     
     try {
-      await signIn(email, password);
+      await signIn({ email, password });
       // O contexto já cuida da navegação em um cenário real
       // Se necessário, você pode usar 'router.replace("(tabs)")' para ir para a tela principal
     } catch (error) {
