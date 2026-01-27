@@ -1,54 +1,37 @@
 import axios from 'axios';
 import { INDICATORS_BFF_URL } from '../constants';
 
-// Instância exclusiva para os Indicadores
-const apiBFF = axios.create({
-  baseURL: INDICATORS_BFF_URL,
-});
-
 export const getNewToken = async () => {
   try {
-    console.log("🔐 [getNewToken] Iniciando autenticação no BFF...");
+    // Chave pura, sem chances de erro de leitura de .env
+    const apiKey = "f9z$2bA#8kLpQ7jd#4r32!@@sW5v!c3gH*rE6tY";
     
-    const apiKey = process.env.EXPO_PUBLIC_API_KEY;
-    console.log("🔑 [getNewToken] API_KEY definida?", !!apiKey);
-    console.log("🔑 [getNewToken] Primeiros chars:", apiKey?.substring(0, 10));
+    console.log("🔐 [getNewToken] Tentativa com chave manual via Axios Puro...");
 
-    if (!apiKey) {
-      console.error("❌ [getNewToken] API_KEY não definida no .env");
-      return null;
-    }
-
-    console.log("📍 [getNewToken] URL do BFF:", INDICATORS_BFF_URL);
-    console.log("🔐 [getNewToken] Enviando POST para /api/auth/apikey...");
-    
-    const response = await apiBFF.post('/api/auth/apikey', {}, {
-      headers: { 'X-API-KEY': apiKey }
+    // Usando axios direto para evitar configurações de instância que possam estar viciadas
+    const response = await axios({
+      method: 'post',
+      url: `${INDICATORS_BFF_URL}/api/auth/apikey`,
+      headers: {
+        'X-API-KEY': apiKey.trim(), // .trim() remove qualquer espaço acidental
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      data: {} // Alguns servidores exigem corpo vazio {} em POST
     });
 
-    console.log("✅ [getNewToken] Resposta recebida:", response.data);
-    
-    // A resposta retorna "appToken", não "token"
     const token = response.data?.appToken || response.data?.token || response.data?.jwt;
     
-    console.log("🔍 [getNewToken] Token encontrado?", !!token);
-    console.log("🔍 [getNewToken] Token (primeiros chars):", token?.substring(0, 20) + "...");
-    
-    if (!token) {
-      console.error("❌ [getNewToken] Token não encontrado na resposta:", response.data);
-      return null;
+    if (token) {
+      console.log("✅ [getNewToken] SUCESSO! Token recebido.");
+      return token;
     }
-
-    console.log("✅ [getNewToken] Token obtido com sucesso!");
-    return token;
+    
+    return null;
   } catch (error: any) {
-    console.error("❌ [getNewToken] ERRO na autenticação");
-    console.error("❌ [getNewToken] Status:", error.response?.status);
-    console.error("❌ [getNewToken] Dados:", error.response?.data);
-    console.error("❌ [getNewToken] Mensagem:", error.message);
-    console.error("❌ [getNewToken] Stack:", error.stack);
+    // LOG DETALHADO PARA O FELIPE
+    console.error("❌ [getNewToken] Erro Status:", error.response?.status);
+    console.error("❌ [getNewToken] Mensagem do Servidor:", error.response?.data);
     return null;
   }
 };
-
-export default apiBFF;

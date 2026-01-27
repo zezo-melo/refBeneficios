@@ -67,12 +67,11 @@ const Indicators: React.FC = () => {
     setError(null);
 
     try {
-      const bffToken = await AsyncStorage.getItem('@AppBeneficios:bffToken');
-      
-      console.log("📱 [Indicators] Token armazenado:", bffToken ? `${bffToken.substring(0, 20)}...` : "NÃO ENCONTRADO");
+      // Obter token do AsyncStorage (salvo após login com getNewToken)
+      let bffToken = await AsyncStorage.getItem('@AppBeneficios:bffToken');
 
       if (!bffToken) {
-        throw new Error('Token não encontrado.');
+        throw new Error('Token BFF não disponível. Faça login novamente.');
       }
 
       console.log("🔄 [Indicators] Buscando dashboard-data...");
@@ -80,7 +79,8 @@ const Indicators: React.FC = () => {
         headers: {
           'Authorization': `Bearer ${bffToken}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 10000
       });
 
       console.log("✅ [Indicators] Dados recebidos!");
