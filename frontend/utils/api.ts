@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { INDICATORS_BFF_URL } from '../constants/index_osm';
+import { INDICATORS_BFF_URL } from '../constants';
 
 export const getNewToken = async () => {
   try {

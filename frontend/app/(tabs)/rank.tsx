@@ -11,6 +11,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/Header';
 import Avatar from '../../components/Avatar';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,19 +47,12 @@ export default function RankScreen() {
       try {
         setLoading(true);
         setError(null);
-        const token = await AsyncStorage.getItem('@AppBeneficios:token');
-        if (!token) {
-          setError('Usuário não autenticado. Faça login novamente.');
-          setLoading(false);
-          return;
-        }
         
         const url = `/leaderboard?limit=${pageSize}&skip=0`;
-        const res = await apiMentorh.get(url);
+        console.log('📡 [Rank] Tentando buscar de:', `${apiMentorh.defaults.baseURL}${url}`);
+        console.log('🔑 [Rank] Header de autorização:', apiMentorh.defaults.headers.common['Authorization']);
         
-        // Os logs de token e URL específicos são tratados pelo apiMentorh agora
-        // console.log('🌐 [Rank] Buscando ranking de:', url);
-        // console.log('🔑 [Rank] Token:', token.substring(0, 20) + '...');
+        const res = await apiMentorh.get(url);
         
         console.log('📡 [Rank] Status da resposta:', res.status);
         
@@ -66,7 +60,7 @@ export default function RankScreen() {
           throw new Error('Falha na resposta da API.');
         }
         
-        const data = await res.json();
+        const data = res.data;
         console.log('✅ [Rank] Dados recebidos:', {
           leaderboardCount: data.leaderboard?.length || 0,
           hasMe: !!data.me,
@@ -78,13 +72,21 @@ export default function RankScreen() {
         setTotal(data.total || 0);
       } catch (e: any) {
         console.error('❌ [Rank] Erro completo ao buscar ranking:', e);
+        console.error('❌ [Rank] Status:', e.response?.status);
+        console.error('❌ [Rank] Mensagem:', e.response?.data);
         setError(e.message || 'Erro ao carregar ranking');
       } finally {
         setLoading(false);
       }
     };
-    fetchLeaderboard();
-  }, []);
+    
+    // Esperar um pequeno delay para garantir que AuthContext iniciou
+    const timer = setTimeout(() => {
+      fetchLeaderboard();
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [apiMentorh]);
 
   const handleLoadMore = useCallback(async () => {
     if (isFetchingMore || leaderboard.length >= total) return;

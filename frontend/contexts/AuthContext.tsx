@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Alert } from 'react-native';
-import { API_URL } from '../constants/index_osm';
+import { API_URL } from '../constants';
 import { getNewToken } from '../utils/api';
 
 const apiMentorh = axios.create({ baseURL: API_URL });
