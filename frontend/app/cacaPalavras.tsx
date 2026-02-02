@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
-import { API_URL } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
-import BackButton from '@/components/BackButton';
 import { Ionicons } from '@expo/vector-icons';
 
 const WORDS = ['OSM', 'MENTORH', 'ADAPTATIVA', 'CAFE', 'EQUIPE', 'CHAMADO'];
@@ -64,7 +61,7 @@ const generateFixedGrid = (): { grid: Cell[][]; placements: WordPlacement[] } =>
 
 export default function CacaPalavrasScreen() {
   const router = useRouter();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, apiMentorh } = useAuth();
 
   const [gridData, setGridData] = useState<Cell[][]>([]);
   const [placementsData, setPlacementsData] = useState<WordPlacement[]>([]);
@@ -176,14 +173,14 @@ export default function CacaPalavrasScreen() {
     const awardedPoints = basePoints + timeBonus;
 
     try {
-      await axios.post(`${API_URL}/missions/complete-word-search`, {
+      await apiMentorh.post('/missions/complete-word-search', {
         points: awardedPoints,
         timeSpent: timeToComplete,
       });
       await refreshProfile();
 
       Alert.alert('Missão concluída! 🎯', `Você ganhou ${awardedPoints} pontos!`);
-      router.back();
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro ao completar missão:', error);
     }
@@ -219,9 +216,6 @@ export default function CacaPalavrasScreen() {
     <ScrollView style={styles.safeArea}>
       <Header />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.backBtnContainer}>
-          <BackButton />
-        </View>
         <Text style={styles.heading}>Caça Palavras OSM</Text>
         <Text style={styles.subtitle}>Encontre os termos abaixo na grade.</Text>
 
@@ -300,7 +294,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  backBtnContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingHorizontal: 20 },
   timerText: { fontSize: 18, fontWeight: '700', color: '#4a7f37' },
   progressText: { fontSize: 18, fontWeight: '700', color: '#1a5d2b' },
   gridContainer: {

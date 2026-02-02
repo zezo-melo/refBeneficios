@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/Header';
 import { useAuth } from '../../contexts/AuthContext';
 import { Stack } from 'expo-router';
 import { router } from "expo-router";
 import { formatName } from "../../utils/formatName";
-import { API_URL } from '../../constants';
 
 
 const MENU_OPTIONS = [
@@ -40,7 +38,7 @@ const MENU_OPTIONS = [
 
 
 export default function ProfileScreen() {
-  const { signOut } = useAuth();
+  const { signOut, apiMentorh } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -48,19 +46,7 @@ export default function ProfileScreen() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem('@AppBeneficios:token');
-      console.log("TOKEN RECUPERADO:", token);
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      const response = await fetch(`${API_URL}/profile`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiMentorh.get('/profile');
 
       if (!response.ok) {
         throw new Error('Failed to fetch profile');

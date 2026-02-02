@@ -1,12 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { API_URL } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
-import BackButton from '@/components/BackButton';
 import QuizIntro from '../components/QuizIntro';
 
 type Option = { key: 'A' | 'B' | 'C' | 'D'; text: string };
@@ -31,17 +27,14 @@ export default function QuizMission6() {
   const [isLoading, setIsLoading] = useState(true);
   
   const router = useRouter();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, apiMentorh } = useAuth();
   const { missionId = 'quiz6' } = useLocalSearchParams();
 
   // Carregar dados da missão
   useEffect(() => {
     const loadMissionData = async () => {
       try {
-        const token = await AsyncStorage.getItem('@AppBeneficios:token');
-        const response = await axios.get(`${API_URL}/missions/mission/${missionId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await apiMentorh.get(`/missions/mission/${missionId}`);
         setMissionData(response.data);
       } catch (error) {
         console.error('Erro ao carregar dados da missão:', error);
@@ -116,12 +109,9 @@ export default function QuizMission6() {
         payload = { correctCount: finalCorrect, timeSpent: timeSpent };
       }
       
-      const token = await AsyncStorage.getItem('@AppBeneficios:token');
-      await axios.post(`${API_URL}${endpoint}`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await apiMentorh.post(endpoint, payload);
       await refreshProfile();
-      router.back();
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro ao completar missão:', error);
       Alert.alert('Erro', 'Não foi possível completar a missão');
@@ -188,7 +178,7 @@ export default function QuizMission6() {
         description={missionData.description}
         videoUrl={missionData.videoUrl}
         onStart={handleStartQuiz}
-        onBack={() => router.back()}
+        onBack={() => router.replace('/(tabs)')}
       />
     );
   }
@@ -197,7 +187,6 @@ export default function QuizMission6() {
     <SafeAreaView style={styles.safeArea}>
       <Header />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContainer}>
-        <BackButton />
         
         {/* Timer */}
         <View style={styles.timerContainer}>

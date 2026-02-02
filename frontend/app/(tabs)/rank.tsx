@@ -13,9 +13,7 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import Avatar from '../../components/Avatar';
-import { API_URL } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // 1. Importação da função formatName
 import { formatName } from "../../utils/formatName";
 
@@ -34,7 +32,7 @@ function mapLevel(points: number): string {
 }
 
 export default function RankScreen() {
-  const { user } = useAuth();
+  const { user, apiMentorh } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<RankItem[]>([]);
@@ -55,36 +53,17 @@ export default function RankScreen() {
           return;
         }
         
-        // A API_URL já inclui /api, então não precisa adicionar novamente
-        const url = `${API_URL}/leaderboard?limit=${pageSize}&skip=0`;
-        console.log('🌐 [Rank] Buscando ranking de:', url);
-        console.log('🔑 [Rank] Token:', token.substring(0, 20) + '...');
+        const url = `/leaderboard?limit=${pageSize}&skip=0`;
+        const res = await apiMentorh.get(url);
         
-        const res = await fetch(url, {
-          headers: { 
-            'Content-Type': 'application/json', 
-            Authorization: `Bearer ${token}` 
-          },
-        });
+        // Os logs de token e URL específicos são tratados pelo apiMentorh agora
+        // console.log('🌐 [Rank] Buscando ranking de:', url);
+        // console.log('🔑 [Rank] Token:', token.substring(0, 20) + '...');
         
         console.log('📡 [Rank] Status da resposta:', res.status);
         
-        if (!res.ok) {
-          const errorText = await res.text();
-          console.error('❌ [Rank] Erro na resposta:', res.status, errorText);
-          
-          // Tratamento mais detalhado de erros
-          if (res.status === 401) {
-            throw new Error('Token inválido ou expirado. Faça login novamente.');
-          } else if (res.status === 403) {
-            throw new Error('Acesso negado. Verifique suas permissões.');
-          } else if (res.status === 404) {
-            throw new Error('Endpoint não encontrado. Verifique a configuração da API.');
-          } else if (res.status === 500) {
-            throw new Error('Erro no servidor. Tente novamente mais tarde.');
-          } else {
-            throw new Error(`Erro ao carregar ranking (${res.status}). Tente novamente.`);
-          }
+        if (!res) {
+          throw new Error('Falha na resposta da API.');
         }
         
         const data = await res.json();
@@ -111,25 +90,15 @@ export default function RankScreen() {
     if (isFetchingMore || leaderboard.length >= total) return;
     try {
       setIsFetchingMore(true);
-      const token = await AsyncStorage.getItem('@AppBeneficios:token');
-      if (!token) {
-        console.error('Token não encontrado ao carregar mais');
-        return;
-      }
+      const url = `/leaderboard?limit=${pageSize}&skip=${leaderboard.length}`;
+      const res = await apiMentorh.get(url);
       
-      const res = await fetch(
-        `${API_URL}/leaderboard?limit=${pageSize}&skip=${leaderboard.length}`,
-        {
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        }
-      );
-      
-      if (!res.ok) {
-        console.error('Erro ao carregar mais:', res.status);
+      if (!res) {
+        console.error('Erro na resposta da API ao carregar mais');
         return; // Silenciosamente falha, não mostra erro para o usuário
       }
       
-      const data = await res.json();
+      const data = res.data; // apiMentorh já retorna data diretamente
       setLeaderboard((prev) => [...prev, ...(data.leaderboard || [])]);
       setTotal(data.total || total);
     } catch (error) {

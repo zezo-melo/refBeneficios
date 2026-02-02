@@ -3,7 +3,6 @@ import { View, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../contexts/AuthContext';
-import { API_URL } from '../constants';
 
 interface BonusChestProps {
   chestId: string;
@@ -29,7 +28,7 @@ const BonusChest: React.FC<BonusChestProps> = ({
   isLocked = false,
   style
 }) => {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshProfile, apiMentorh } = useAuth();
   const [chestState, setChestState] = useState<ChestState>({
     id: chestId,
     type: 'chest',
@@ -76,36 +75,19 @@ const BonusChest: React.FC<BonusChestProps> = ({
     }
 
     try {
-      const token = await AsyncStorage.getItem('@AppBeneficios:token');
-      if (!token) {
-        Alert.alert('Erro', 'Token de autenticação não encontrado');
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/missions/open-chest`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chestId,
-          points
-        }),
+      console.log('📦 [BonusChest] Enviando para a API:', { chestId, points });
+      const response = await apiMentorh.post('/missions/open-chest', {
+        chestId,
+        points
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro ao abrir baú');
-      }
-
-      const data = await response.json();
+      const data = response.data;
       
       // Atualizar estado local
       setChestState(prev => ({ ...prev, opened: true }));
       
       // Atualizar dados do usuário
-      await refreshUser();
+      await refreshProfile();
       
       // Callback opcional
       if (onChestOpened) {
@@ -118,9 +100,9 @@ const BonusChest: React.FC<BonusChestProps> = ({
         [{ text: 'OK' }]
       );
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao abrir baú:', error);
-      Alert.alert('Erro', 'Não foi possível abrir o baú. Tente novamente.');
+      Alert.alert('Erro', error.response?.data?.message || 'Não foi possível abrir o baú. Tente novamente.');
     }
   };
 

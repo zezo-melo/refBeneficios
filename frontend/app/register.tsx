@@ -227,6 +227,7 @@ export default function RegisterScreen() {
 
     try {
       await signUp(registrationData);
+      router.replace('login');
     } catch (error) {
       Alert.alert('Erro', error.message);
     }

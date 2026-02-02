@@ -1,10 +1,9 @@
 // tabs/ProfileCurriculumScreen.tsx (VERSÃO FINAL COM GRÁFICOS E OCORRÊNCIAS - CORREÇÃO DO ERRO 'SPLIT')
 
+import { useAuth } from '../../contexts/AuthContext';
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import axios from 'axios';
-// *** IMPORTS DE COMPONENTES E CONSTANTES ***
-import { API_URL } from '../../constants/index';
 import BackButton from '../../components/BackButton';
 import Header from '@/components/Header';
 import Avatar from '../../components/Avatar';
@@ -290,6 +289,7 @@ const ProfileCurriculumScreen = () => {
     const [data, setData] = useState<CurriculumResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { apiMentorh } = useAuth();
 
     useEffect(() => {
         const fetchCurriculum = async () => {
@@ -301,16 +301,11 @@ const ProfileCurriculumScreen = () => {
                 // Para evitar a confusão, se o backend está retornando os dados em http://localhost:3000/api/users/curriculum/me (como no print), mantemos esta URL na chamada.
                 // Se o backend for http://localhost:3000/api/curriculum/me (baseado no server.js), a chamada deve ser ajustada.
                 // VAMOS CONSIDERAR QUE A ROTA CORRETA NO BACKEND É users/curriculum/me (conforme o print de dados)
-                const response = await axios.get(`${API_URL}/users/curriculum/me`); 
+                const response = await apiMentorh.get('/users/curriculum/me'); 
                 setData(response.data);
                 console.log('ProfileCurriculumScreen - received data:', response.data);
-            } catch (err) {
-                // Se o erro for 404/400, sugere que o backend não tem a rota users/curriculum/me
-                if (axios.isAxiosError(err) && err.response?.status === 404) {
-                    setError('Rota de API não encontrada (404). Verifique se o endpoint é /users/curriculum/me ou se deveria ser /curriculum/me.');
-                } else {
-                    setError('Falha ao carregar dados. Verifique o console ou se o Backend está rodando.');
-                }
+            } catch (err: any) {
+                setError(err.message || 'Falha ao carregar dados. Verifique o console ou se o Backend está rodando.');
                 console.error('Erro de API:', err);
             } finally {
                 setLoading(false);

@@ -1,9 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { API_URL } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import BackButton from '@/components/BackButton';
@@ -31,16 +28,14 @@ export default function QuizMission4() {
   const [isLoading, setIsLoading] = useState(true);
   
   const router = useRouter();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, apiMentorh } = useAuth();
 
   // Carregar dados da missão
   useEffect(() => {
     const loadMissionData = async () => {
       try {
-        const token = await AsyncStorage.getItem('@AppBeneficios:token');
-        const response = await axios.get(`${API_URL}/missions/mission/quiz4`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        console.log('✅ [Quiz4] Tentando carregar dados da missão. Auth Header:', apiMentorh.defaults.headers.common['Authorization']);
+        const response = await apiMentorh.get(`/missions/mission/quiz4`);
         setMissionData(response.data);
       } catch (error) {
         console.error('Erro ao carregar dados da missão:', error);
@@ -91,12 +86,12 @@ export default function QuizMission4() {
     const finalCorrect = isAnswerCorrect ? correctCount + 1 : correctCount;
     
     try {
-      await axios.post(`${API_URL}/missions/complete-quiz-mission-4`, { 
+      await apiMentorh.post('/missions/complete-quiz-mission-4', { 
         correctCount: finalCorrect,
         timeSpent: timeSpent
       });
       await refreshProfile();
-      router.back();
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro ao completar missão:', error);
       Alert.alert('Erro', 'Não foi possível completar a missão');
@@ -150,7 +145,7 @@ export default function QuizMission4() {
         description={missionData.description}
         videoUrl={missionData.videoUrl}
         onStart={handleStartQuiz}
-        onBack={() => router.back()}
+        onBack={() => router.replace('/(tabs)')}
       />
     );
   }
@@ -159,7 +154,6 @@ export default function QuizMission4() {
     <SafeAreaView style={styles.safeArea}>
       <Header />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContainer}>
-        <BackButton />
         
         {/* Timer */}
         <View style={styles.timerContainer}>

@@ -36,7 +36,7 @@ export default function LoginScreen() {
       await signIn({ email, password });
       // O contexto já cuida da navegação em um cenário real
       // Se necessário, você pode usar 'router.replace("(tabs)")' para ir para a tela principal
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Erro', error.message);
     }
   };
@@ -155,7 +155,7 @@ export default function LoginScreen() {
             {/* Botão de Cadastro */}
             <TouchableOpacity 
               style={styles.registerButton}
-              onPress={() => router.navigate('register')} // Atualizado para usar o router
+              onPress={() => router.navigate('/register')} // Atualizado para usar o router
               activeOpacity={0.8}
               disabled={isLoading}
             >

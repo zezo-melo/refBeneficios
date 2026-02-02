@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { INDICATORS_BFF_URL } from '../constants/index';
+import { INDICATORS_BFF_URL } from '../constants/index_osm';
 import Header from '../components/Header';
 
 export default function IndicatorsScreen() {

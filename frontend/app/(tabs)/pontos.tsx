@@ -3,8 +3,6 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import Header from '../../components/Header';
 import BackButton from '@/components/BackButton';
 import { useAuth } from '../../contexts/AuthContext';
-import { API_URL } from '../../constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -95,7 +93,7 @@ const MONTHLY_STATS = [
 ];
 
 export default function PontosScreen() {
-  const { user } = useAuth();  
+  const { user, apiMentorh } = useAuth();  
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('Mês');
@@ -103,19 +101,7 @@ export default function PontosScreen() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem('@AppBeneficios:token');
-      console.log("TOKEN RECUPERADO:", token);
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      const response = await fetch(`${API_URL}/profile`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiMentorh.get('/profile');
 
       if (!response.ok) {
         throw new Error('Failed to fetch profile');

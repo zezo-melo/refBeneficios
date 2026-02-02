@@ -12,9 +12,6 @@ import {
   Alert
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { INDICATORS_BFF_URL } from '../../constants';
 import Header from '../../components/Header';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -57,7 +54,7 @@ const COLORS = {
 const CHART_COLORS = ['#0084FF', '#7B68EE', '#FF9800', '#E91E63', '#4CAF50', '#9C27B0'];
 
 const Indicators: React.FC = () => {
-  const { user } = useAuth();
+  const { user, apiMentorh } = useAuth();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,27 +64,17 @@ const Indicators: React.FC = () => {
     setError(null);
 
     try {
-      // Obter token do AsyncStorage (salvo após login com getNewToken)
-      let bffToken = await AsyncStorage.getItem('@AppBeneficios:bffToken');
+      // O apiMentorh já lida com o token JWT principal. 
+      // Se 'INDICATORS_BFF_URL' precisar de um token diferente ou base URL diferente,
+      // então apiMentorh precisaria ser configurado para isso, ou manter um axios separado.
+      // Por enquanto, assumimos que apiMentorh pode ser usado para este endpoint.
+      // O endpoint completo é /api/dashboard-data, e apiMentorh já tem a base URL.
+      const response = await apiMentorh.get('/dashboard-data');
 
-      if (!bffToken) {
-        throw new Error('Token BFF não disponível. Faça login novamente.');
-      }
-
-      console.log("🔄 [Indicators] Buscando dashboard-data...");
-      const response = await axios.get(`${INDICATORS_BFF_URL}/api/dashboard-data`, {
-        headers: {
-          'Authorization': `Bearer ${bffToken}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
-
-      console.log("✅ [Indicators] Dados recebidos!");
       setDashboardData(response.data);
     } catch (err: any) {
       console.error('❌ [Indicators] Erro:', err.message);
-      const msg = err.response?.data?.message || err.message || 'Erro ao carregar dados.';
+      const msg = err.message || 'Erro ao carregar dados.';
       setError(msg);
     } finally {
       setIsLoading(false);
